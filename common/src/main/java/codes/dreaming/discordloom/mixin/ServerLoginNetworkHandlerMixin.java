@@ -53,7 +53,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
         Optional<Node> idNode = LuckUser.getNodes().stream().filter(node -> node.getKey().equals("discordloom.id")).findAny();
 
         if(idNode.isEmpty()) {
-            LOGGER.info("A user without a discordloom.id node tried to join!");
+            LOGGER.trace("A user without a discordloom.id node tried to join!");
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             NetworkManager.collectPackets(packet -> this.connection.send(packet), NetworkManager.serverToClient(), LINK_PACKET, buf);
             Text text = Text.of("If you're seeing this, it means that you haven't installed the DiscordLoom mod. Please install it and try again.");

@@ -19,7 +19,7 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
-    modLocalRuntime("maven.modrinth:luckperms:v${rootProject.luckperms_version}-forge")
+    //TODO: find why this doesn't work modLocalRuntime("maven.modrinth:luckperms:v${rootProject.luckperms_version}-forge")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
