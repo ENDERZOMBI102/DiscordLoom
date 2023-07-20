@@ -16,6 +16,7 @@ public class DiscordLoom
 
 	public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");
 
+
 	public static void init() {
 
 	}
@@ -23,7 +24,7 @@ public class DiscordLoom
 	public static void initClient() {
 		LOGGER.info("Initializing DiscordLoom");
 		NetworkManager.registerReceiver(NetworkManager.serverToClient(), LINK_PACKET, (buf, ctx) -> {
-			LOGGER.info("Received link packet");
+			ClientLinkManager.setUri(buf.readString());
 		});
 	}
 }

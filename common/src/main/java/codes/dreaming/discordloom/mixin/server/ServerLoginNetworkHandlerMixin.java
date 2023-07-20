@@ -1,4 +1,4 @@
-package codes.dreaming.discordloom.mixin;
+package codes.dreaming.discordloom.mixin.server;
 
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
@@ -55,6 +55,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
         if(idNode.isEmpty()) {
             LOGGER.trace("A user without a discordloom.id node tried to join!");
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeString("https://discord.com");
             NetworkManager.collectPackets(packet -> this.connection.send(packet), NetworkManager.serverToClient(), LINK_PACKET, buf);
             Text text = Text.of("If you're seeing this, it means that you haven't installed the DiscordLoom mod. Please install it and try again.");
             this.connection.send(new DisconnectS2CPacket(text));

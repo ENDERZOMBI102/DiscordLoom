@@ -6,9 +6,10 @@
   "mixins": [
   ],
   "client": [
+    "client.DisconnectedScreenMixin"
   ],
   "server": [
-    "ServerLoginNetworkHandlerMixin"
+    "server.ServerLoginNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
