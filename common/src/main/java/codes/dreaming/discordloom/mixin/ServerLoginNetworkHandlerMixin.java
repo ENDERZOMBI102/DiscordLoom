@@ -2,10 +2,12 @@ package codes.dreaming.discordloom.mixin;
 
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.transformers.PacketSink;
 import io.netty.buffer.Unpooled;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -31,6 +33,8 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
     @Shadow @Nullable GameProfile profile;
 
+    @Shadow @Final public ClientConnection connection;
+
     @Inject(method = "acceptPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;checkCanJoin(Ljava/net/SocketAddress;Lcom/mojang/authlib/GameProfile;)Lnet/minecraft/text/Text;"), cancellable = true)
     private void checkCanJoin(CallbackInfo ci) {
         if(this.profile == null) {
@@ -51,6 +55,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
         if(idNode.isEmpty()) {
             System.out.println("A user without a discordloom.id node tried to join!");
+            NetworkManager.collectPackets(packet -> connection.send(packet), NetworkManager.Side.S2C, LINK_PACKET, new PacketByteBuf(Unpooled.buffer()));
             this.disconnect(Text.of("If you're seeing this, it means that you haven't installed the DiscordLoom mod. Please install it and try again."));
             ci.cancel();
         }

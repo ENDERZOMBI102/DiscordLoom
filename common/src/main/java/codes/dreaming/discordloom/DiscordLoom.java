@@ -18,8 +18,7 @@ public class DiscordLoom
 	@Environment(EnvType.CLIENT)
 	public static void init() {
 		NetworkManager.registerReceiver(NetworkManager.Side.S2C, LINK_PACKET, (buf, ctx) -> {
-			String url = buf.readString();
-			System.out.println("Received link packet: " + url);
+			System.out.println("Received link packet");
 		});
 	}
 }
