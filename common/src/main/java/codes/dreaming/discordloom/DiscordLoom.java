@@ -22,7 +22,7 @@ public class DiscordLoom
 
 	public static void initClient() {
 		LOGGER.info("Initializing DiscordLoom");
-		NetworkManager.registerReceiver(NetworkManager.Side.S2C, LINK_PACKET, (buf, ctx) -> {
+		NetworkManager.registerReceiver(NetworkManager.serverToClient(), LINK_PACKET, (buf, ctx) -> {
 			LOGGER.info("Received link packet");
 		});
 	}

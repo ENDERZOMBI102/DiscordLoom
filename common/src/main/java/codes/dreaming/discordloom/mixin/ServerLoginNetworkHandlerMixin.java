@@ -9,6 +9,7 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
     @Shadow @Final public ClientConnection connection;
 
-    @Inject(method = "acceptPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;checkCanJoin(Ljava/net/SocketAddress;Lcom/mojang/authlib/GameProfile;)Lnet/minecraft/text/Text;"), cancellable = true)
+    @Inject(method = "acceptPlayer", at = @At(value = "RETURN", target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V"), cancellable = true)
     private void checkCanJoin(CallbackInfo ci) {
         LuckPerms LUCK_PERMS = LuckPermsProvider.get();
         if(this.profile == null) {
@@ -52,9 +53,12 @@ public abstract class ServerLoginNetworkHandlerMixin {
         Optional<Node> idNode = LuckUser.getNodes().stream().filter(node -> node.getKey().equals("discordloom.id")).findAny();
 
         if(idNode.isEmpty()) {
-            LOGGER.trace("A user without a discordloom.id node tried to join!");
-            NetworkManager.collectPackets(packet -> connection.send(packet), NetworkManager.serverToClient(), LINK_PACKET, new PacketByteBuf(Unpooled.buffer()));
-            this.disconnect(Text.of("If you're seeing this, it means that you haven't installed the DiscordLoom mod. Please install it and try again."));
+            LOGGER.info("A user without a discordloom.id node tried to join!");
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            NetworkManager.collectPackets(packet -> this.connection.send(packet), NetworkManager.serverToClient(), LINK_PACKET, buf);
+            Text text = Text.of("If you're seeing this, it means that you haven't installed the DiscordLoom mod. Please install it and try again.");
+            this.connection.send(new DisconnectS2CPacket(text));
+            this.disconnect(text);
             ci.cancel();
             return;
         }
