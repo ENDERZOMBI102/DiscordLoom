@@ -34,8 +34,9 @@ public abstract class DisconnectedScreenMixin extends Screen {
     private void init(CallbackInfo ci) {
         assert this.client != null;
 
-        if(ClientLinkManager.getUri() != null) {
-            this.client.keyboard.setClipboard(ClientLinkManager.getUri());
+        String uri;
+        if((uri = ClientLinkManager.consumeUri()) != null) {
+            this.client.keyboard.setClipboard(uri);
 
             Text message = Text.of("For playing on this server, you need to link your account. Please click on the button bellow to link your account, if the button doesn't work the link is in your clipboard, paste it in your browser. :)");
             this.reasonFormatted = MultilineText.create(this.textRenderer, message, this.width - 50);
@@ -43,7 +44,7 @@ public abstract class DisconnectedScreenMixin extends Screen {
 
             Text linkButtonMessage = Text.of("Click here to link your account");
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight, this.height - 30), 200, 20, linkButtonMessage, button -> {
-                Util.getOperatingSystem().open(ClientLinkManager.getUri());
+                Util.getOperatingSystem().open(uri);
             }));
             Text cancelButtonMessage = Text.of("Cancel");
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight + 30, this.height - 30), 200, 20, cancelButtonMessage, button -> this.client.setScreen(this.parent)));
