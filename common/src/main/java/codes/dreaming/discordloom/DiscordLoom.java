@@ -3,22 +3,27 @@ package codes.dreaming.discordloom;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class DiscordLoom
 {
 	public static final String MOD_ID = "discordloom";
 
-	public static final LuckPerms LUCK_PERMS = LuckPermsProvider.get();
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");
 
-	@Environment(EnvType.CLIENT)
 	public static void init() {
+
+	}
+
+	public static void initClient() {
+		LOGGER.info("Initializing DiscordLoom");
 		NetworkManager.registerReceiver(NetworkManager.Side.S2C, LINK_PACKET, (buf, ctx) -> {
-			System.out.println("Received link packet");
+			LOGGER.info("Received link packet");
 		});
 	}
 }

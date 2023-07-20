@@ -9,7 +9,14 @@
   "license": "MIT",
   "icon": "icon.png",
   "environment": "*",
-  "entrypoints": {},
+  "entrypoints": {
+    "main": [
+      "codes.dreaming.discordloom.fabric.DiscordLoomFabric"
+    ],
+    "client": [
+      "codes.dreaming.discordloom.fabric.DiscordLoomFabricClient"
+    ]
+  },
   "mixins": [
     "discordloom.mixins.json",
     "discordloom-common.mixins.json"
