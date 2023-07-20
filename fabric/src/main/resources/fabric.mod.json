@@ -2,15 +2,12 @@
   "schemaVersion": 1,
   "id": "discordloom",
   "version": "${version}",
-
   "name": "Discord Loom",
   "description": "",
   "authors": [],
   "contact": {},
-
   "license": "MIT",
   "icon": "icon.png",
-
   "environment": "*",
   "entrypoints": {},
   "mixins": [
