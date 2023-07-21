@@ -47,6 +47,11 @@ public abstract class DisconnectedScreenMixin extends Screen {
         super(title);
     }
 
+    /**
+     * Initializes the functionality for linking the account to the server.
+     * This method is called at the beginning of the "init()" method in the containing class.
+     * It sets up the necessary UI components and handles the link account process.
+     */
     @Inject(method = "init()V", at = @At("HEAD"), cancellable = true)
     private void init(CallbackInfo ci) {
         assert this.client != null;
