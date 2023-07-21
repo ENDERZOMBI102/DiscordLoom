@@ -4,13 +4,14 @@
   "package": "codes.dreaming.discordloom.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "LoginHelloC2SPacketMixin"
   ],
   "client": [
     "client.ConnectScreenMixin",
-    "client.DisconnectedScreenMixin"
+    "client.DisconnectedScreenMixin",
+    "client.LoginHelloC2SPacketMixin"
   ],
   "server": [
+    "server.LoginHelloC2SPacketMixin",
     "server.ServerLoginNetworkHandlerMixin"
   ],
   "injectors": {

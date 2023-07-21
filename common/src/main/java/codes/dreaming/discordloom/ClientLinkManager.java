@@ -1,7 +1,10 @@
 package codes.dreaming.discordloom;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ServerAddress;
 
+@Environment(EnvType.CLIENT)
 public class ClientLinkManager {
     private static String url = null;
     private static ServerAddress serverAddress = null;
