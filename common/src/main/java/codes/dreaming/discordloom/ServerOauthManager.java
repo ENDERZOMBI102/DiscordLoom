@@ -6,6 +6,7 @@ import discord4j.rest.RestClient;
 
 public class ServerOauthManager {
     private static final String CLIENT_ID = "1131713124261703760";
+    private static final String CLEINT_SECRET = "REDACTED";
     private static final String BOT_TOKEN = "REDACTED";
     private static final String REDIRECT_URI = "http://localhost:8000/callback";
 
@@ -17,7 +18,7 @@ public class ServerOauthManager {
     }
 
     public static String gedDiscordId(String code) {
-        DiscordOAuth2Client oAuth2Client = DiscordOAuth2Client.createFromCode(restClient, AuthorizationCodeGrantRequest.builder().code(code).clientId(1131713124261703760L).clientSecret("oWvA01xPkIu9TqjRPBy8GGqQ_cz6lsYp").redirectUri("http://localhost:8000/callback").build());
+        DiscordOAuth2Client oAuth2Client = DiscordOAuth2Client.createFromCode(restClient, AuthorizationCodeGrantRequest.builder().code(code).clientId(Long.parseLong(CLIENT_ID)).clientSecret(CLEINT_SECRET).redirectUri(REDIRECT_URI).build());
         return oAuth2Client.getCurrentUser().block().id().toString();
     }
 }

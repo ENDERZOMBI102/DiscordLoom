@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 public class DiscordLoom {
     public static final String MOD_ID = "discordloom";
 
+    public static final String LuckPermsMetadataKey = MOD_ID + ":discordid";
+
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");

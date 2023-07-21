@@ -7,7 +7,8 @@ import io.netty.buffer.Unpooled;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.MetaNode;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -57,7 +58,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
             return;
         }
 
-        Optional<Node> idNode = LuckUser.getNodes().stream().filter(node -> node.getKey().equals("discordloom.id")).findAny();
+        Optional<MetaNode> idNode = LuckUser.getNodes(NodeType.META).stream().filter(node -> node.getMetaKey().equals(LuckPermsMetadataKey)).findAny();
 
         if(idNode.isEmpty()) {
             LOGGER.trace("A user without a discordloom.id node tried to join!");
@@ -71,6 +72,6 @@ public abstract class ServerLoginNetworkHandlerMixin {
             return;
         }
 
-        LOGGER.info("User " + this.profile.getName() + " (" + this.profile.getId() + ") joined with a discordloom.id node! (" + idNode.get().getContexts().getAnyValue("discordId").get() + ")");
+        LOGGER.info("User " + this.profile.getName() + " (" + this.profile.getId() + ") joined with a discordloom.id node! (" + idNode.get().getMetaValue() + ")");
     }
 }
