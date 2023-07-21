@@ -34,5 +34,6 @@ public abstract class LoginHelloC2SPacketMixin {
         buf.writeOptional(Optional.ofNullable(ClientLinkManager.getCode()), PacketByteBuf::writeString);
 
         LOGGER.info("Sent code: " + ClientLinkManager.getCode());
+        ClientLinkManager.setCode(null);
     }
 }
