@@ -1,10 +1,6 @@
 package codes.dreaming.discordloom;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ServerAddress;
-
-import java.net.InetSocketAddress;
 
 public class ClientLinkManager {
     private static String url = null;
@@ -22,6 +18,18 @@ public class ClientLinkManager {
 
     public static String getUrl() {
         return url;
+    }
+
+    public static Integer getPortFromOauthURL(){
+        if(url == null) return null;
+        String[] urlSplit = url.split("&");
+        for(String s : urlSplit) {
+            if(s.contains("redirect_uri")) {
+                String[] redirectSplit = s.split("=");
+                return Integer.parseInt(redirectSplit[redirectSplit.length - 1].split(":")[2].split("/")[0]);
+            }
+        }
+        return null;
     }
 
     public static void setUrl(String url) {
