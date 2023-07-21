@@ -23,6 +23,9 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    implementation forgeRuntimeLibrary(compileOnly("com.discord4j:discord4j-core:3.3.0-M2"))
+    implementation forgeRuntimeLibrary(compileOnly("com.discord4j:discord4j-oauth2:3.3.0-M2"))
 }
 
 processResources {

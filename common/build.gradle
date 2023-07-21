@@ -6,6 +6,9 @@ dependencies {
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
     compileOnly 'net.luckperms:api:5.4'
+
+    include modImplementation("com.discord4j:discord4j-core:3.3.0-M2")
+    include modImplementation("com.discord4j:discord4j-oauth2:3.3.0-M2")
 }
 
 architectury {

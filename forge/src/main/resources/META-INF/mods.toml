@@ -70,3 +70,9 @@ description='''
    versionRange="[0,)"
    ordering="NONE"
    side="SERVER"
+[[dependencies.discordloom]]
+   modId="architectury"
+   mandatory=true
+   versionRange="[0,)"
+   ordering="NONE"
+   side="BOTH"

@@ -6,6 +6,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(DiscordLoom.MOD_ID)
@@ -20,5 +21,10 @@ public class DiscordLoomForge {
     @SubscribeEvent
     public void onInitializeClient(final FMLClientSetupEvent event) {
         DiscordLoom.initClient();
+    }
+
+    @SubscribeEvent
+    public void onInitializeServer(final FMLDedicatedServerSetupEvent event) {
+        DiscordLoom.initServer();
     }
 }
