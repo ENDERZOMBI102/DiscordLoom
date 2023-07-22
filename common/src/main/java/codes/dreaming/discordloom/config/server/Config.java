@@ -3,11 +3,15 @@ package codes.dreaming.discordloom.config.server;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.List;
+
 public class Config {
     public final ForgeConfigSpec.ConfigValue<Long> discordClientId;
     public final ForgeConfigSpec.ConfigValue<String> discordClientSecret;
     public final ForgeConfigSpec.ConfigValue<String> discordBotToken;
     public final ForgeConfigSpec.ConfigValue<Integer> discordRedirectUriPort;
+
+    public final ForgeConfigSpec.ConfigValue<List<Long>> checkForGuildsOnJoin;
 
     private Config(ForgeConfigSpec.Builder builder) {
         builder.push("serverConfig");
@@ -15,6 +19,7 @@ public class Config {
         discordClientSecret = builder.comment("The client secret of your Discord application").define("client_secret", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         discordBotToken = builder.comment("The bot token of your Discord application").define("bot_token", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         discordRedirectUriPort = builder.comment("The port to use for the redirect URI").define("redirect_uri_port", 8000);
+        checkForGuildsOnJoin = builder.comment("The guilds to check for on join, obviously the bot need to be in those").define("check_for_guilds", List.of(1093290924357996626L));
         builder.pop();
     }
 

@@ -1,6 +1,6 @@
 package codes.dreaming.discordloom.mixin.server;
 
-import codes.dreaming.discordloom.ServerOauthManager;
+import codes.dreaming.discordloom.ServerDiscordManager;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,8 +24,8 @@ public abstract class LoginHelloC2SPacketMixin {
         String code = buf.readOptional(PacketByteBuf::readString).orElse(null);
         if(code == null) return;
         LOGGER.trace("Received code: " + code);
-        String userId = ServerOauthManager.gedDiscordId(code);
-        ServerOauthManager.link(userId, this.profileId().get());
+        String userId = DISCORD_MANAGER.doDicordLink(code);
+        DISCORD_MANAGER.link(userId, this.profileId().get());
     }
 
 }

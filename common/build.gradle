@@ -6,6 +6,8 @@ dependencies {
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
     compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'com.electronwill.night-config:core:3.6.5'
+    compileOnly 'com.electronwill.night-config:toml:3.6.5'
     compileOnly "net.minecraftforge:forgeconfigapiport-fabric:${rootProject.forgeconfig_version}"
 
     include modImplementation("com.discord4j:discord4j-core:3.3.0-M2")

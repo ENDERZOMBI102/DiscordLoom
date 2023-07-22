@@ -27,10 +27,10 @@ public class DiscordLoom {
     @Environment(EnvType.SERVER)
     public static Supplier<LuckPerms> LUCK_PERMS = Suppliers.memoize(LuckPermsProvider::get);
 
+    public static ServerDiscordManager DISCORD_MANAGER;
 
     public static void init() {
         LOGGER.info("Initializing DiscordLoom");
-        ForgeConfigHelper.registerServerConfig(Config.SPEC);
     }
 
     @Environment(EnvType.CLIENT)
@@ -43,6 +43,20 @@ public class DiscordLoom {
 
     @Environment(EnvType.SERVER)
     public static void initServer() {
+        ForgeConfigHelper.registerServerConfig(Config.SPEC);
 
+        //Spawn a new thread to wait for config to be loaded
+        new Thread(() -> {
+            while (!Config.SPEC.isLoaded()) {
+                try {
+                    LOGGER.info("Waiting for config to be loaded");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            LOGGER.info("Config loaded");
+            DISCORD_MANAGER = new ServerDiscordManager();
+        }).start();
     }
 }

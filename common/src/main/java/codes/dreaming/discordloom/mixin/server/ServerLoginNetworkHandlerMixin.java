@@ -1,6 +1,8 @@
 package codes.dreaming.discordloom.mixin.server;
 
-import codes.dreaming.discordloom.ServerOauthManager;
+import codes.dreaming.discordloom.DiscordLoom;
+import codes.dreaming.discordloom.ServerDiscordManager;
+import codes.dreaming.discordloom.config.server.Config;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
@@ -54,13 +56,24 @@ public abstract class ServerLoginNetworkHandlerMixin {
         if(idNode.isEmpty()) {
             LOGGER.trace("A user without a discordloom.id node tried to join!");
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeString(ServerOauthManager.generateDiscordOauthUri());
+            buf.writeString(DISCORD_MANAGER.generateDiscordOauthUri());
             NetworkManager.collectPackets(packet -> this.connection.send(packet), NetworkManager.serverToClient(), LINK_PACKET, buf);
             Text text = Text.of("If you're seeing this, it means that you haven't installed the DiscordLoom mod. Please install it and try again.");
             this.connection.send(new DisconnectS2CPacket(text));
             this.disconnect(text);
             ci.cancel();
             return;
+        }
+
+        for (Long guild : Config.CONFIG.checkForGuildsOnJoin.get()) {
+            if (!DISCORD_MANAGER.isUserInGuild(idNode.get().getMetaValue(), guild)) {
+                LOGGER.info("A user not in the required discord channel tried to join!");
+                Text text = Text.of("You are not in the required discord channel to join this server.");
+                this.connection.send(new DisconnectS2CPacket(text));
+                this.disconnect(text);
+                ci.cancel();
+                return;
+            }
         }
 
         LOGGER.info("User " + this.profile.getName() + " (" + this.profile.getId() + ") joined with a discordloom.id node! (" + idNode.get().getMetaValue() + ")");
