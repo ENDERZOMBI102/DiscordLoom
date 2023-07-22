@@ -13,6 +13,7 @@ import net.luckperms.api.node.types.MetaNode;
 import java.util.UUID;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
+import static codes.dreaming.discordloom.DiscordLoomServer.LUCK_PERMS;
 
 @Environment(EnvType.SERVER)
 public class ServerDiscordManager {

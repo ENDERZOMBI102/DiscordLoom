@@ -1,7 +1,5 @@
 package codes.dreaming.discordloom.mixin.server;
 
-import codes.dreaming.discordloom.DiscordLoom;
-import codes.dreaming.discordloom.ServerDiscordManager;
 import codes.dreaming.discordloom.config.server.Config;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
@@ -25,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
+import static codes.dreaming.discordloom.DiscordLoomServer.LUCK_PERMS;
 
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class ServerLoginNetworkHandlerMixin {

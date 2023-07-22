@@ -2,17 +2,12 @@ package codes.dreaming.discordloom;
 
 import codes.dreaming.discordloom.config.ForgeConfigHelper;
 import codes.dreaming.discordloom.config.server.Config;
-import com.google.common.base.Suppliers;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Supplier;
 
 
 public class DiscordLoom {
@@ -23,9 +18,6 @@ public class DiscordLoom {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");
-
-    @Environment(EnvType.SERVER)
-    public static Supplier<LuckPerms> LUCK_PERMS = Suppliers.memoize(LuckPermsProvider::get);
 
     public static ServerDiscordManager DISCORD_MANAGER;
 
