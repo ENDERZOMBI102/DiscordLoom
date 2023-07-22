@@ -26,7 +26,7 @@ public class ServerDiscordManager {
         client.login().block();
     }
 
-    public boolean isUserInGuild(String userId, long guildId) {
+    public boolean isUserInGuild(String userId, String guildId) {
         return client.getGuildById(Snowflake.of(guildId)).getMember(Snowflake.of(userId)).blockOptional().isPresent();
     }
 

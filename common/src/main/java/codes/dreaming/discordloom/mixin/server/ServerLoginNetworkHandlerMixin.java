@@ -64,7 +64,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
             return;
         }
 
-        for (Long guild : Config.CONFIG.checkForGuildsOnJoin.get()) {
+        for (String guild : Config.CONFIG.checkForGuildsOnJoin.get()) {
             if (!DISCORD_MANAGER.isUserInGuild(idNode.get().getMetaValue(), guild)) {
                 LOGGER.info("A user not in the required discord channel tried to join!");
                 Text text = Text.of("You are not in the required discord channel to join this server.");
