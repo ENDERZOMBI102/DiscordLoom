@@ -10,8 +10,8 @@ dependencies {
     compileOnly 'com.electronwill.night-config:toml:3.6.5'
     compileOnly "net.minecraftforge:forgeconfigapiport-fabric:${rootProject.forgeconfig_version}"
 
-    include modImplementation("com.discord4j:discord4j-core:3.3.0-M2")
-    include modImplementation("com.discord4j:discord4j-oauth2:3.3.0-M2")
+    api("com.discord4j:discord4j-core:3.3.0-M2")
+    api("com.discord4j:discord4j-oauth2:3.3.0-M2")
 }
 
 architectury {
