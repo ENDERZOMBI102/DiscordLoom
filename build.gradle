@@ -39,6 +39,10 @@ allprojects {
         // See https://docs.gradle.org/current/userguide/declaring_repositories.html
         // for more information about repositories.
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven {
+            name = "Fuzs Mod Resources"
+            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        }
         exclusiveContent {
             forRepository {
                 maven {

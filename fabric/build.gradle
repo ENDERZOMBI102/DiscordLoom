@@ -27,6 +27,10 @@ dependencies {
     include modImplementation("com.discord4j:discord4j-core:3.3.0-M2")
     include modImplementation("com.discord4j:discord4j-oauth2:3.3.0-M2")
 
+    implementation include('com.electronwill.night-config:core:3.6.5')
+    implementation include('com.electronwill.night-config:toml:3.6.5')
+    modImplementation include("net.minecraftforge:forgeconfigapiport-fabric:${rootProject.forgeconfig_version}")
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }

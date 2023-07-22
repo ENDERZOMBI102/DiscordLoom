@@ -1,5 +1,7 @@
 package codes.dreaming.discordloom;
 
+import codes.dreaming.discordloom.config.ForgeConfigHelper;
+import codes.dreaming.discordloom.config.server.Config;
 import com.google.common.base.Suppliers;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
@@ -28,6 +30,7 @@ public class DiscordLoom {
 
     public static void init() {
         LOGGER.info("Initializing DiscordLoom");
+        ForgeConfigHelper.registerServerConfig(Config.SPEC);
     }
 
     @Environment(EnvType.CLIENT)
@@ -40,5 +43,6 @@ public class DiscordLoom {
 
     @Environment(EnvType.SERVER)
     public static void initServer() {
+
     }
 }
