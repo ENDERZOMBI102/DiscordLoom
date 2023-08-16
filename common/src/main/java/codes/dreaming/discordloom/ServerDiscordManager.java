@@ -3,14 +3,19 @@ package codes.dreaming.discordloom;
 import codes.dreaming.discordloom.config.server.Config;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
+import discord4j.discordjson.Id;
 import discord4j.discordjson.json.AuthorizationCodeGrantRequest;
 import discord4j.oauth2.DiscordOAuth2Client;
 import discord4j.rest.RestClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.luckperms.api.node.types.MetaNode;
+import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
 import static codes.dreaming.discordloom.DiscordLoomServer.LUCK_PERMS;
@@ -24,6 +29,14 @@ public class ServerDiscordManager {
         restClient = RestClient.create(Config.CONFIG.discordBotToken.get());
         client = DiscordClient.create(Config.CONFIG.discordBotToken.get());
         client.login().block();
+    }
+
+    public List<String> getMissingGuilds() {
+        return Config.CONFIG.checkForGuildsOnJoin.get().stream()
+                .filter(guildId -> client.getGuilds()
+                        .toStream()
+                        .noneMatch(guild -> guild.id().equals(Id.of(guildId))))
+                .collect(Collectors.toList());
     }
 
     public boolean isUserInGuild(String userId, String guildId) {

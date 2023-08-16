@@ -2,6 +2,9 @@ package codes.dreaming.discordloom.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import codes.dreaming.discordloom.DiscordLoom;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -26,5 +29,10 @@ public class DiscordLoomForge {
     @SubscribeEvent
     public void onInitializeServer(final FMLDedicatedServerSetupEvent event) {
         DiscordLoom.initServer();
+    }
+
+    @SubscribeEvent
+    public void onServerStarted(final ServerStartedEvent event) {
+        DiscordLoom.serverStarted(event.getServer());
     }
 }

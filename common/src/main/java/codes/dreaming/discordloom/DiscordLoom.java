@@ -5,9 +5,14 @@ import codes.dreaming.discordloom.config.server.Config;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 
 public class DiscordLoom {
@@ -36,19 +41,16 @@ public class DiscordLoom {
     @Environment(EnvType.SERVER)
     public static void initServer() {
         ForgeConfigHelper.registerServerConfig(Config.SPEC);
+    }
 
-        //Spawn a new thread to wait for config to be loaded
-        new Thread(() -> {
-            while (!Config.SPEC.isLoaded()) {
-                try {
-                    LOGGER.info("Waiting for config to be loaded");
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            LOGGER.info("Config loaded");
+    @Environment(EnvType.SERVER)
+    public static void serverStarted(MinecraftServer server) {
+        if(server.isDedicated()) {
             DISCORD_MANAGER = new ServerDiscordManager();
-        }).start();
+            List<String> missingGuilds =  DISCORD_MANAGER.getMissingGuilds();
+            if(!missingGuilds.isEmpty()) {
+                throw new CrashException(new CrashReport("Bot is not in all required guilds: " + String.join(",", missingGuilds), new Exception()));
+            }
+        }
     }
 }
