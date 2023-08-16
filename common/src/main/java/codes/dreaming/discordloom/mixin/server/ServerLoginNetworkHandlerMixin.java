@@ -34,7 +34,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
     @Shadow @Final public ClientConnection connection;
 
-    @Inject(method = "acceptPlayer", at = @At(value = "RETURN", target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V"), cancellable = true)
+    @Inject(method = "acceptPlayer", at = @At(value = "RETURN", target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", ordinal = 1), cancellable = true)
     private void checkCanJoin(CallbackInfo ci) {
         if(this.profile == null) {
             LOGGER.error("Profile is null!");
