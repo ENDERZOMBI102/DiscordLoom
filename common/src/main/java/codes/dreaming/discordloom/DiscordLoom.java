@@ -1,7 +1,9 @@
 package codes.dreaming.discordloom;
 
+import codes.dreaming.discordloom.command.DiscordLoomCommand;
 import codes.dreaming.discordloom.config.ForgeConfigHelper;
 import codes.dreaming.discordloom.config.server.Config;
+import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -41,6 +43,8 @@ public class DiscordLoom {
     @Environment(EnvType.SERVER)
     public static void initServer() {
         ForgeConfigHelper.registerServerConfig(Config.SPEC);
+
+        CommandRegistrationEvent.EVENT.register(((dispatcher, registry, selection) -> dispatcher.register(DiscordLoomCommand.command())));
     }
 
     @Environment(EnvType.SERVER)

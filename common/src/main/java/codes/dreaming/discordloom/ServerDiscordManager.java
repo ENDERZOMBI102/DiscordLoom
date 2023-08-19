@@ -5,6 +5,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.discordjson.Id;
 import discord4j.discordjson.json.AuthorizationCodeGrantRequest;
+import discord4j.discordjson.json.UserData;
 import discord4j.oauth2.DiscordOAuth2Client;
 import discord4j.rest.RestClient;
 import net.fabricmc.api.EnvType;
@@ -48,6 +49,10 @@ public class ServerDiscordManager {
             // Do nothing
         }
         return isPresent;
+    }
+
+    public Mono<String> getUserName(String userId) {
+        return client.getUserById(Snowflake.of(userId)).getData().map(UserData::username);
     }
 
     public String generateDiscordOauthUri() {
