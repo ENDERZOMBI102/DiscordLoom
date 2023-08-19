@@ -40,7 +40,14 @@ public class ServerDiscordManager {
     }
 
     public boolean isUserInGuild(String userId, String guildId) {
-        return client.getGuildById(Snowflake.of(guildId)).getMember(Snowflake.of(userId)).blockOptional().isPresent();
+        boolean isPresent = false;
+
+        try {
+            isPresent = client.getGuildById(Snowflake.of(guildId)).getMember(Snowflake.of(userId)).blockOptional().isPresent();
+        }catch (Exception e) {
+            // Do nothing
+        }
+        return isPresent;
     }
 
     public String generateDiscordOauthUri() {
