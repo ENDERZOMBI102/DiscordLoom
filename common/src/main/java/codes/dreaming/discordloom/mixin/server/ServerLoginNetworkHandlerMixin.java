@@ -4,6 +4,7 @@ import codes.dreaming.discordloom.config.server.Config;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
+import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
@@ -23,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
-import static codes.dreaming.discordloom.DiscordLoomServer.LUCK_PERMS;
 
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class ServerLoginNetworkHandlerMixin {
@@ -41,7 +41,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
             return;
         }
 
-        User LuckUser = LUCK_PERMS.get().getUserManager().getUser(profile.getId());
+        User LuckUser = LuckPermsProvider.get().getUserManager().getUser(profile.getId());
 
         if(LuckUser == null) {
             LOGGER.error("User not found in LuckPerms!");

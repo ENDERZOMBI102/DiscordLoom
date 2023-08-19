@@ -9,6 +9,7 @@ import discord4j.oauth2.DiscordOAuth2Client;
 import discord4j.rest.RestClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.types.MetaNode;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
-import static codes.dreaming.discordloom.DiscordLoomServer.LUCK_PERMS;
 
 @Environment(EnvType.SERVER)
 public class ServerDiscordManager {
@@ -61,7 +61,7 @@ public class ServerDiscordManager {
 
     public static void link(String userId, UUID profileId) {
         LOGGER.info("Linking user " + userId + " to Minecraft account " + profileId.toString());
-        LUCK_PERMS.get().getUserManager().modifyUser(profileId, user -> user.data().add(MetaNode.builder(LuckPermsMetadataKey, userId).build()));
+        LuckPermsProvider.get().getUserManager().modifyUser(profileId, user -> user.data().add(MetaNode.builder(LuckPermsMetadataKey, userId).build()));
     }
 
     private static String getDiscordRedirectUri() {
