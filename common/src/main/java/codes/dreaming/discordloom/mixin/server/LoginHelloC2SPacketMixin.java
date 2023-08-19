@@ -1,6 +1,7 @@
 package codes.dreaming.discordloom.mixin.server;
 
 import codes.dreaming.discordloom.ServerDiscordManager;
+import codes.dreaming.discordloom.config.server.Config;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +26,15 @@ public abstract class LoginHelloC2SPacketMixin {
         if(code == null) return;
         LOGGER.trace("Received code: " + code);
         String userId = DISCORD_MANAGER.doDicordLink(code);
-        DISCORD_MANAGER.link(userId, this.profileId().get());
+
+        if (!Config.CONFIG.allowMultipleMinecraftAccountsPerDiscordAccount.get()) {
+            if(!ServerDiscordManager.getPlayersFromDiscordId(userId).isEmpty()){
+                LOGGER.trace("Discord account already linked to another user!");
+                return;
+            }
+        }
+
+        ServerDiscordManager.link(userId, this.profileId().get());
     }
 
 }

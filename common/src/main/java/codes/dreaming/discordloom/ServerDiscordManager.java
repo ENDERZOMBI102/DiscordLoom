@@ -11,11 +11,13 @@ import discord4j.rest.RestClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.matcher.NodeMatcher;
 import net.luckperms.api.node.types.MetaNode;
+import net.minecraft.text.Text;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -64,9 +66,28 @@ public class ServerDiscordManager {
         return oAuth2Client.getCurrentUser().block().id().toString();
     }
 
+    public static Set<UUID> getPlayersFromDiscordId(String discordId) {
+        Set<UUID> matches;
+
+        try {
+            matches = LuckPermsProvider.get().getUserManager().searchAll(NodeMatcher.metaKey(buildNodeMatcherWithDiscordId(discordId))).get().keySet();
+        } catch (Exception e) {
+            return Collections.emptySet();
+        }
+
+        return matches;
+    }
+
     public static void link(String userId, UUID profileId) {
         LOGGER.info("Linking user " + userId + " to Minecraft account " + profileId.toString());
-        LuckPermsProvider.get().getUserManager().modifyUser(profileId, user -> user.data().add(MetaNode.builder(LuckPermsMetadataKey, userId).build()));
+        LuckPermsProvider.get().getUserManager().modifyUser(profileId, user -> user.data().add(buildNodeMatcherWithDiscordId(userId)));
+    }
+
+    private static MetaNode buildNodeMatcherWithDiscordId(String discordId) {
+        return MetaNode.builder()
+                .key(LuckPermsMetadataKey)
+                .value(discordId)
+                .build();
     }
 
     private static String getDiscordRedirectUri() {

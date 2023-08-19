@@ -1,6 +1,7 @@
 package codes.dreaming.discordloom.command;
 
 import codes.dreaming.discordloom.PermissionHelper;
+import codes.dreaming.discordloom.ServerDiscordManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -56,14 +57,7 @@ public class DiscordLoomCommand {
     public static int whoisDiscord(CommandContext<ServerCommandSource> ctx) {
         String id = StringArgumentType.getString(ctx, "id");
 
-        Set<UUID> matches;
-
-        try {
-            matches = LuckPermsProvider.get().getUserManager().searchAll(NodeMatcher.metaKey(MetaNode.builder().key(LuckPermsMetadataKey).value(id).build())).get().keySet();
-        } catch (Exception e) {
-            ctx.getSource().sendFeedback(Text.of("§cAn error occurred while searching for the user!"), false);
-            return 0;
-        }
+        Set<UUID> matches = ServerDiscordManager.getPlayersFromDiscordId(id);
 
         if (matches.isEmpty()) {
             ctx.getSource().sendFeedback(Text.of("§cNo matches found!"), false);
