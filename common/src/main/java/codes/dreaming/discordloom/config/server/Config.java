@@ -12,7 +12,10 @@ public class Config {
     public final ForgeConfigSpec.ConfigValue<Integer> discordRedirectUriPort;
 
     public final ForgeConfigSpec.ConfigValue<List<? extends String>> checkForGuildsOnJoin;
+    public final ForgeConfigSpec.ConfigValue<List<? extends String>> syncDiscordRolesOnJoin;
+
     public final ForgeConfigSpec.ConfigValue<Boolean> allowMultipleMinecraftAccountsPerDiscordAccount;
+
 
     private Config(ForgeConfigSpec.Builder builder) {
         builder.push("serverConfig");
@@ -21,6 +24,7 @@ public class Config {
         discordBotToken = builder.comment("The bot token of your Discord application").define("bot_token", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         discordRedirectUriPort = builder.comment("The port to use for the redirect URI").define("redirect_uri_port", 8000);
         checkForGuildsOnJoin = builder.comment("The guilds to check for on join, obviously the bot need to be in those").defineList("check_for_guilds", List.of(), entry -> true);
+        syncDiscordRolesOnJoin = builder.comment("The roles to sync on join.").comment("Format: [\"guildId:roleId\"]").defineList("sync_discord_roles", List.of(), entry -> true);
         allowMultipleMinecraftAccountsPerDiscordAccount = builder.comment("Allow multiple Minecraft accounts per Discord account").define("allow_multiple_minecraft_accounts_per_discord_account", false);
         builder.pop();
     }

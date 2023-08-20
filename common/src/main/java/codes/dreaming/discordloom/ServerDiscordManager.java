@@ -53,6 +53,18 @@ public class ServerDiscordManager {
         return isPresent;
     }
 
+    public boolean userHasRoles(String userId, String guildId, String role) {
+        boolean hasRole = false;
+
+        try {
+            hasRole = client.getGuildById(Snowflake.of(guildId)).getMember(Snowflake.of(userId)).blockOptional().get().roles().stream().anyMatch(roleData -> roleData.asString().equals(role));
+        }catch (Exception e) {
+            // Do nothing
+        }
+
+        return hasRole;
+    }
+
     public Mono<String> getUserName(String userId) {
         return client.getUserById(Snowflake.of(userId)).getData().map(UserData::username);
     }

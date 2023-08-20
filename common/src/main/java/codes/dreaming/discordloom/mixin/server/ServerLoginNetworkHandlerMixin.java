@@ -6,8 +6,11 @@ import codes.dreaming.discordloom.mixinInterfaces.LoginHelloC2SPacketAccessor;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
+import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeBuilder;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
 import net.minecraft.network.ClientConnection;
@@ -17,6 +20,7 @@ import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,6 +44,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
     @Shadow @Final public ClientConnection connection;
 
 
+    @Shadow @Final private static Logger LOGGER;
 
     @Inject(method = "onHello", at = @At("TAIL"))
     private void onHelloMixin(LoginHelloC2SPacket packet, CallbackInfo ci) {
@@ -118,6 +123,18 @@ public abstract class ServerLoginNetworkHandlerMixin {
                 return;
             }
         }
+
+        LuckUser.getNodes().stream().filter(node -> node.getKey().startsWith("group." + MOD_ID + ":")).forEach(node -> LuckUser.data().remove(node));
+
+        for (String guildRole : Config.CONFIG.syncDiscordRolesOnJoin.get()) {
+            String[] guildRoleSplit = guildRole.split(":");
+            if (DISCORD_MANAGER.userHasRoles(idNode.get().getMetaValue(), guildRoleSplit[0], guildRoleSplit[1])) {
+                LOGGER.info("User " + this.profile.getName() + " (" + this.profile.getId() + ") joined with " + guildRoleSplit[1] + " role!");
+                LuckUser.data().add(Node.builder("group." + MOD_ID + ":" + guildRoleSplit[1]).build());
+            }
+        }
+
+        LuckPermsProvider.get().getUserManager().saveUser(LuckUser);
 
         LOGGER.info("User " + this.profile.getName() + " (" + this.profile.getId() + ") joined with a discordloom.id node! (" + idNode.get().getMetaValue() + ")");
     }
