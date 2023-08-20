@@ -1,6 +1,8 @@
 package codes.dreaming.discordloom.mixin.server;
 
+import codes.dreaming.discordloom.ServerDiscordManager;
 import codes.dreaming.discordloom.config.server.Config;
+import codes.dreaming.discordloom.mixinInterfaces.LoginHelloC2SPacketAccessor;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
@@ -10,6 +12,7 @@ import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
@@ -22,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
 
@@ -33,6 +38,45 @@ public abstract class ServerLoginNetworkHandlerMixin {
     @Shadow @Nullable GameProfile profile;
 
     @Shadow @Final public ClientConnection connection;
+
+
+
+    @Inject(method = "onHello", at = @At("TAIL"))
+    private void onHelloMixin(LoginHelloC2SPacket packet, CallbackInfo ci) {
+        LoginHelloC2SPacketAccessor mixin = (LoginHelloC2SPacketAccessor) (Object) packet;
+
+        //noinspection ConstantValue
+        assert mixin != null;
+
+        String code = mixin.discordloom$getCode();
+
+        if(code == null) return;
+        LOGGER.trace("Received code: " + code);
+        String userId = DISCORD_MANAGER.doDicordLink(code);
+
+        if (!Config.CONFIG.allowMultipleMinecraftAccountsPerDiscordAccount.get()) {
+            Set<UUID> uuids = ServerDiscordManager.getPlayersFromDiscordId(userId);
+            if(!uuids.isEmpty()){
+                UUID uuid = uuids.stream().findFirst().get();
+                User user = LuckPermsProvider.get().getUserManager().getUser(uuids.stream().findFirst().get());
+
+                String username;
+
+                if(user != null){
+                    username = user.getUsername();
+                } else {
+                    username = uuid.toString() + " (unknown)";
+                }
+
+                Text text = Text.of("This Discord account is already linked to " + username + " Minecraft account!");
+
+                this.disconnect(text);
+                return;
+            }
+        }
+
+        ServerDiscordManager.link(userId, packet.profileId().get());
+    }
 
     @Inject(method = "acceptPlayer", at = @At(value = "RETURN", target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", ordinal = 1), cancellable = true)
     private void checkCanJoin(CallbackInfo ci) {
