@@ -46,6 +46,8 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadowCommon]
     archiveClassifier.set("dev-shadow")
+    relocate 'io.netty', 'com.discord4j.shaded.io.netty'
+    relocate 'com.fasterxml', 'com.discord4j.shaded.com.fasterxml'
 }
 
 remapJar {
