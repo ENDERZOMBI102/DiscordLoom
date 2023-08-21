@@ -62,7 +62,8 @@ public class ServerDiscordManager {
         Set<UUID> matches;
 
         try {
-            matches = LuckPermsProvider.get().getUserManager().searchAll(NodeMatcher.metaKey(buildNodeMatcherWithDiscordId(discordId))).get().keySet();
+            MetaNode discordIdNode = buildNodeMatcherWithDiscordId(discordId);
+            matches = LuckPermsProvider.get().getUserManager().searchAll((node -> node.equals(discordIdNode))).get().keySet();
         } catch (Exception e) {
             return Collections.emptySet();
         }
