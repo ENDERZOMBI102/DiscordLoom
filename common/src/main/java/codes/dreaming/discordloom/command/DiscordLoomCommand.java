@@ -1,20 +1,17 @@
 package codes.dreaming.discordloom.command;
 
 import codes.dreaming.discordloom.PermissionHelper;
-import codes.dreaming.discordloom.ServerDiscordManager;
+import codes.dreaming.discordloom.discord.ServerDiscordManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.luckperms.api.LuckPerms;
+import net.dv8tion.jda.api.entities.User;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.matcher.NodeMatcher;
-import net.luckperms.api.node.types.MetaNode;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.TeleportCommand;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -47,7 +44,14 @@ public class DiscordLoomCommand {
 
         String discordId = LuckPermsProvider.get().getUserManager().getUser(player.getUuid()).getNodes(NodeType.META).stream().filter(node -> node.getMetaKey().equals(LuckPermsMetadataKey)).findAny().get().getMetaValue();
 
-        String username = DISCORD_MANAGER.getUserName(discordId).block();
+        User user = DISCORD_MANAGER.getDiscordUserFromId(discordId);
+
+        if(user == null){
+            ctx.getSource().sendFeedback(Text.of("§cNo matches found!"), false);
+            return 0;
+        }
+
+        String username = user.getName();
 
         ctx.getSource().sendFeedback(Text.of("§a" + player.getDisplayName().getString() + " is " + username + " on Discord!"), false);
 

@@ -3,11 +3,13 @@ package codes.dreaming.discordloom;
 import codes.dreaming.discordloom.command.DiscordLoomCommand;
 import codes.dreaming.discordloom.config.ForgeConfigHelper;
 import codes.dreaming.discordloom.config.server.Config;
+import codes.dreaming.discordloom.discord.ServerDiscordManager;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -27,6 +29,8 @@ public class DiscordLoom {
     public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");
 
     public static ServerDiscordManager DISCORD_MANAGER;
+
+    public static PlayerManager PLAYER_MANAGER;
 
     public static void init() {
         LOGGER.info("Initializing DiscordLoom");
@@ -50,7 +54,8 @@ public class DiscordLoom {
     @Environment(EnvType.SERVER)
     public static void serverStarted(MinecraftServer server) {
         if(server.isDedicated()) {
-            DISCORD_MANAGER = new ServerDiscordManager(server.getPlayerManager());
+            PLAYER_MANAGER = server.getPlayerManager();
+            DISCORD_MANAGER = new ServerDiscordManager();
             List<String> missingGuilds =  DISCORD_MANAGER.getMissingGuilds();
             if(!missingGuilds.isEmpty()) {
                 throw new CrashException(new CrashReport("Bot is not in all required guilds: " + String.join(",", missingGuilds), new Exception()));
