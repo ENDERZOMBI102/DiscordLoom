@@ -85,6 +85,8 @@ public abstract class ServerLoginNetworkHandlerMixin {
     private void checkCanJoin(CallbackInfo ci) {
         if(this.profile == null) {
             LOGGER.error("Profile is null!");
+            this.disconnect(Text.of("There was an error while trying to fetch your profile, please try again later."));
+            ci.cancel();
             return;
         }
 
