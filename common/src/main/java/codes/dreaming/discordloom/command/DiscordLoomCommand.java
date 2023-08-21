@@ -2,6 +2,7 @@ package codes.dreaming.discordloom.command;
 
 import codes.dreaming.discordloom.PermissionHelper;
 import codes.dreaming.discordloom.discord.ServerDiscordManager;
+import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -34,7 +35,7 @@ public class DiscordLoomCommand {
                                         .executes(DiscordLoomCommand::whoisPlayer))
                         )
                         .then(literal("discord")
-                                .then(argument("id", StringArgumentType.word())
+                                .then(argument("id", LongArgumentType.longArg())
                                         .executes(DiscordLoomCommand::whoisDiscord)))
                 );
     }
@@ -59,9 +60,9 @@ public class DiscordLoomCommand {
     }
 
     public static int whoisDiscord(CommandContext<ServerCommandSource> ctx) {
-        String id = StringArgumentType.getString(ctx, "id");
+        long id = LongArgumentType.getLong(ctx, "id");
 
-        Set<UUID> matches = ServerDiscordManager.getPlayersFromDiscordId(id);
+        Set<UUID> matches = ServerDiscordManager.getPlayersFromDiscordId(Long.toString(id));
 
         if (matches.isEmpty()) {
             ctx.getSource().sendFeedback(Text.of("§cNo matches found!"), false);
@@ -71,7 +72,13 @@ public class DiscordLoomCommand {
         ArrayList<String> names = new ArrayList<>();
 
         for (UUID uuid : matches) {
-            names.add(Objects.requireNonNull(LuckPermsProvider.get().getUserManager().getUser(uuid)).getFriendlyName());
+            net.luckperms.api.model.user.User luckUser = LuckPermsProvider.get().getUserManager().getUser(uuid);
+
+            if(luckUser == null){
+                names.add("§cUnknown user (§4" + uuid + "§c)");
+            }else{
+                names.add(luckUser.getFriendlyName());
+            }
         }
 
         ctx.getSource().sendFeedback(Text.of("§aFound " + names.size() + " matches: " + String.join(", ", names)), false);

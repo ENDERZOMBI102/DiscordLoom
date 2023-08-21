@@ -6,6 +6,7 @@ import codes.dreaming.discordloom.config.server.Config;
 import codes.dreaming.discordloom.discord.ServerDiscordManager;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.networking.NetworkManager;
+import net.dv8tion.jda.api.entities.Guild;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.server.MinecraftServer;
@@ -56,9 +57,10 @@ public class DiscordLoom {
         if(server.isDedicated()) {
             PLAYER_MANAGER = server.getPlayerManager();
             DISCORD_MANAGER = new ServerDiscordManager();
-            List<String> missingGuilds =  DISCORD_MANAGER.getMissingGuilds();
+            List<Guild> missingGuilds =  DISCORD_MANAGER.getMissingGuilds();
             if(!missingGuilds.isEmpty()) {
-                throw new CrashException(new CrashReport("Bot is not in all required guilds: " + String.join(",", missingGuilds), new Exception()));
+                missingGuilds.forEach(guild -> LOGGER.error("Bot is not in required guild: " + guild.getName()));
+                throw new CrashException(new CrashReport("Bot is not in all required guilds", new Exception()));
             }
         }
     }

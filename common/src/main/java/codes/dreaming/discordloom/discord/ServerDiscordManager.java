@@ -6,6 +6,7 @@ import discord4j.oauth2.DiscordOAuth2Client;
 import discord4j.rest.RestClient;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.fabricmc.api.EnvType;
@@ -16,6 +17,7 @@ import net.luckperms.api.node.types.MetaNode;
 import reactor.util.annotation.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static codes.dreaming.discordloom.DiscordLoom.*;
 
@@ -37,8 +39,9 @@ public class ServerDiscordManager {
         return jdaApi;
     }
 
-    public List<String> getMissingGuilds() {
-        return List.of(); //Config.CONFIG.checkForGuildsOnJoin.get().stream().filter(guildId -> jdaApi.getGuildById(guildId) == null).collect(Collectors.toList());
+    public List<Guild> getMissingGuilds() {
+        List<Guild> guilds = jdaApi.getGuilds();
+        return Config.CONFIG.checkForGuildsOnJoin.get().stream().filter(id -> guilds.stream().noneMatch(guild -> guild.getId().equals(id))).map(jdaApi::getGuildById).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Nullable
