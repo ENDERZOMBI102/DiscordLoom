@@ -50,7 +50,7 @@ public class DiscordLoom {
     @Environment(EnvType.SERVER)
     public static void serverStarted(MinecraftServer server) {
         if(server.isDedicated()) {
-            DISCORD_MANAGER = new ServerDiscordManager();
+            DISCORD_MANAGER = new ServerDiscordManager(server.getPlayerManager());
             List<String> missingGuilds =  DISCORD_MANAGER.getMissingGuilds();
             if(!missingGuilds.isEmpty()) {
                 throw new CrashException(new CrashReport("Bot is not in all required guilds: " + String.join(",", missingGuilds), new Exception()));
