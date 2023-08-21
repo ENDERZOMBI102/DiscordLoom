@@ -63,7 +63,12 @@ public class ServerDiscordManager {
 
         try {
             MetaNode discordIdNode = buildNodeMatcherWithDiscordId(discordId);
-            matches = LuckPermsProvider.get().getUserManager().searchAll((node -> node.equals(discordIdNode))).get().keySet();
+            matches = LuckPermsProvider.get().getUserManager().searchAll((node -> {
+                if (node instanceof MetaNode metaNode) {
+                    return metaNode.getMetaKey().equals(discordIdNode.getMetaKey()) && metaNode.getMetaValue().equals(discordIdNode.getMetaValue());
+                }
+                return false;
+            })).get().keySet();
         } catch (Exception e) {
             return Collections.emptySet();
         }
