@@ -27,7 +27,9 @@ dependencies {
     runtimeOnly shadowCommon("com.discord4j:discord4j-core:3.3.0-M2")
     runtimeOnly shadowCommon("com.discord4j:discord4j-oauth2:3.3.0-M2")
 
-    runtimeOnly shadowCommon("net.dv8tion:JDA:${rootProject.jda_version}")
+    runtimeOnly shadowCommon("net.dv8tion:JDA:${rootProject.jda_version}") {
+        exclude module: "opus-java"
+    }
 
     implementation include('com.electronwill.night-config:core:3.6.5')
     implementation include('com.electronwill.night-config:toml:3.6.5')
@@ -48,8 +50,6 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadowCommon]
     archiveClassifier.set("dev-shadow")
-    relocate 'io.netty', 'com.discord4j.shaded.io.netty'
-    relocate 'com.fasterxml', 'com.discord4j.shaded.com.fasterxml'
 }
 
 remapJar {
