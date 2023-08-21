@@ -18,6 +18,7 @@ import net.luckperms.api.node.types.MetaNode;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
+import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
@@ -80,6 +81,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
                 Text text = Text.of("This Discord account is already linked to " + username + " Minecraft account!");
 
+                this.connection.send(new LoginDisconnectS2CPacket(text));
                 this.connection.disconnect(text);
                 return;
             }
