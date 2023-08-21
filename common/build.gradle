@@ -13,7 +13,9 @@ dependencies {
     api("com.discord4j:discord4j-core:3.3.0-M2")
     api("com.discord4j:discord4j-oauth2:3.3.0-M2")
 
-    api("net.dv8tion:JDA:${rootProject.jda_version}")
+    api("net.dv8tion:JDA:${rootProject.jda_version}") {
+        exclude module: "opus-java"
+    }
 }
 
 architectury {

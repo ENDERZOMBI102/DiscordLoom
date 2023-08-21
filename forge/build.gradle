@@ -27,7 +27,9 @@ dependencies {
     implementation forgeRuntimeLibrary(compileOnly("com.discord4j:discord4j-core:3.3.0-M2"))
     implementation forgeRuntimeLibrary(compileOnly("com.discord4j:discord4j-oauth2:3.3.0-M2"))
 
-    implementation forgeRuntimeLibrary(compileOnly("net.dv8tion:JDA:${rootProject.jda_version}"))
+    implementation forgeRuntimeLibrary(compileOnly("net.dv8tion:JDA:${rootProject.jda_version}")) {
+        exclude module: "opus-java"
+    }
 }
 
 processResources {
@@ -43,9 +45,6 @@ shadowJar {
 
     configurations = [project.configurations.shadowCommon]
     archiveClassifier.set("dev-shadow")
-
-    relocate 'io.netty', 'com.discord4j.shaded.io.netty'
-    relocate 'com.fasterxml', 'com.discord4j.shaded.com.fasterxml'
 }
 
 remapJar {
