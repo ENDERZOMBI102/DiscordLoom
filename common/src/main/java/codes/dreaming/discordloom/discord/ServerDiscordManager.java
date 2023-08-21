@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.node.NodeEqualityPredicate;
 import net.luckperms.api.node.matcher.NodeMatcher;
 import net.luckperms.api.node.types.MetaNode;
 import reactor.util.annotation.Nullable;
@@ -63,12 +64,7 @@ public class ServerDiscordManager {
 
         try {
             MetaNode discordIdNode = buildNodeMatcherWithDiscordId(discordId);
-            matches = LuckPermsProvider.get().getUserManager().searchAll((node -> {
-                if (node instanceof MetaNode metaNode) {
-                    return metaNode.getMetaKey().equals(discordIdNode.getMetaKey()) && metaNode.getMetaValue().equals(discordIdNode.getMetaValue());
-                }
-                return false;
-            })).get().keySet();
+            matches = LuckPermsProvider.get().getUserManager().searchAll(NodeMatcher.equals(discordIdNode, NodeEqualityPredicate.EXACT)).get().keySet();
         } catch (Exception e) {
             return Collections.emptySet();
         }
