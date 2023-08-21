@@ -80,7 +80,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
 
                 Text text = Text.of("This Discord account is already linked to " + username + " Minecraft account!");
 
-                this.disconnect(text);
+                this.connection.disconnect(text);
                 return;
             }
         }
