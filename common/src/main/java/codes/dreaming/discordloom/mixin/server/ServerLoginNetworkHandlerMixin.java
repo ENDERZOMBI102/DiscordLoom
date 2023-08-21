@@ -125,7 +125,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
         }
 
 
-        boolean hasMandatoryVCChannel = PermissionHelper.hasPermission(luckUser, MOD_ID + ".bypass_vc") || Config.CONFIG.mandatoryVCChannels.get().isEmpty() || Config.CONFIG.mandatoryVCChannels.get()
+        boolean hasMandatoryVCChannel = Config.CONFIG.mandatoryVCChannels.get().isEmpty() || PermissionHelper.hasPermission(luckUser, MOD_ID + ".bypass_vc") || Config.CONFIG.mandatoryVCChannels.get()
                 .stream()
                 .anyMatch(mandatoryVCChannel -> DISCORD_MANAGER.isUserInVoiceChannel(Snowflake.of(idNode.get().getMetaValue()), mandatoryVCChannel));
 
