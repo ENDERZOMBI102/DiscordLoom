@@ -10,11 +10,7 @@ import java.util.UUID;
 
 public class PermissionHelper {
     public static boolean hasPermission(User user, String permission) {
-        return user.getNodes().stream()
-                .filter(iNode -> iNode.getKey().equals(permission))
-                .map(Node::getValue)
-                .findFirst()
-                .orElse(false);
+        return user.getCachedData().getPermissionData().checkPermission(permission).asBoolean();
     }
 
     public static boolean hasPermission(UUID player, String permission) {
