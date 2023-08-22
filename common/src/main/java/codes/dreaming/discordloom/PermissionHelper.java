@@ -34,12 +34,4 @@ public class PermissionHelper {
 
         return hasPermission(Objects.requireNonNull(src.getPlayer()).getUuid(), permission);
     }
-
-    public static boolean hasPermission(ServerCommandSource src, String permission, Integer fallbackLevel) {
-        if(src.hasPermissionLevel(fallbackLevel)){
-            return true;
-        }
-
-        return hasPermission(src, permission);
-    }
 }

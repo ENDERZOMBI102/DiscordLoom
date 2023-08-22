@@ -28,7 +28,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class DiscordLoomCommand {
     public static LiteralArgumentBuilder<ServerCommandSource> command() {
         return literal("discordloom")
-                .requires(src -> PermissionHelper.hasPermission(src, "discordloom.discordloom", 2))
+                .requires(src -> PermissionHelper.hasPermission(src, "discordloom.discordloom"))
                 .then(literal("whois")
                         .then(literal("player")
                                 .then(argument("player", EntityArgumentType.player())
