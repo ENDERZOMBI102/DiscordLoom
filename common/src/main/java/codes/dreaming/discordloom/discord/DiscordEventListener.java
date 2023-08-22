@@ -22,10 +22,10 @@ public class DiscordEventListener extends ListenerAdapter {
 
         if(event.getChannelLeft() != null && Config.CONFIG.mandatoryVCChannels.get().contains(event.getChannelLeft().getId())){
             ServerDiscordManager.getPlayersFromDiscordId(event.getEntity().getId()).forEach(uuid -> {
-                LOGGER.info("Kicking player " + uuid + " from server since he left a mandatory VC channel");
                 ServerPlayerEntity player = PLAYER_MANAGER.getPlayer(uuid);
                 if(player == null) return;
 
+                LOGGER.info("Kicking player " + uuid + " from server since he left a mandatory VC channel");
                 player.networkHandler.disconnect(Text.of("You left a mandatory VC channel"));
             });
         }
