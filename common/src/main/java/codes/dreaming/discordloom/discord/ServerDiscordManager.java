@@ -72,12 +72,7 @@ public class ServerDiscordManager {
         return matches;
     }
 
-    public static void link(String userId, UUID profileId) {
-        LOGGER.info("Linking user " + userId + " to Minecraft account " + profileId.toString());
-        LuckPermsProvider.get().getUserManager().modifyUser(profileId, user -> user.data().add(buildNodeMatcherWithDiscordId(userId)));
-    }
-
-    private static MetaNode buildNodeMatcherWithDiscordId(String discordId) {
+    public static MetaNode buildNodeMatcherWithDiscordId(String discordId) {
         return MetaNode.builder()
                 .key(LuckPermsMetadataKey)
                 .value(discordId)
