@@ -1,5 +1,6 @@
 package codes.dreaming.discordloom.discord;
 
+import codes.dreaming.discordloom.PermissionHelper;
 import codes.dreaming.discordloom.config.server.Config;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,6 +25,8 @@ public class DiscordEventListener extends ListenerAdapter {
             ServerDiscordManager.getPlayersFromDiscordId(event.getEntity().getId()).forEach(uuid -> {
                 ServerPlayerEntity player = PLAYER_MANAGER.getPlayer(uuid);
                 if(player == null) return;
+
+                if(PermissionHelper.hasPermission(player.getUuid(), MOD_ID + ".bypass_vc")) return;
 
                 LOGGER.info("Kicking player " + uuid + " from server since he left a mandatory VC channel");
                 player.networkHandler.disconnect(Text.of("You left a mandatory VC channel"));
