@@ -50,6 +50,11 @@ public class ServerDiscordManager {
         return jdaApi.retrieveUserById(id).complete();
     }
 
+    @Nullable
+    public Guild getDiscordGuildFromId(Long guildId) {
+        return jdaApi.getGuildById(guildId);
+    }
+
     public String generateDiscordOauthUri() {
         return "https://discord.com/api/oauth2/authorize?client_id=" + Config.CONFIG.discordClientId.get() + "&redirect_uri=" + getDiscordRedirectUri() + "&response_type=code&scope=identify";
     }
