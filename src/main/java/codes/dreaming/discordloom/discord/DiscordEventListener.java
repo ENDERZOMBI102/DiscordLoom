@@ -4,6 +4,9 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -70,7 +73,7 @@ public class DiscordEventListener extends ListenerAdapter {
                 }
             }
 
-            event.reply("Found matches " + String.join(", ", names)).queue();
+            event.reply("Found matches " + String.join(", ", names)).setEphemeral(true).queue();
         }
     }
 }
