@@ -48,7 +48,7 @@ public class DiscordEventListener extends ListenerAdapter {
     @Override
     public void onUserContextInteraction(UserContextInteractionEvent event) {
         if (event.getName().equals("Get user minecraft info")) {
-            Set<UUID> uuids = ServerDiscordManager.getPlayersFromDiscordId(event.getUser().getId());
+            Set<UUID> uuids = ServerDiscordManager.getPlayersFromDiscordId(event.getTarget().getId());
 
             if (uuids.isEmpty()) {
                 event.reply("This user is not linked to any minecraft account").queue();
