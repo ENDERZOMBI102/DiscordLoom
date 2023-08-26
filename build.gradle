@@ -1,9 +1,24 @@
 plugins {
     id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 version = project.mod_version
 group = project.maven_group
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    exclude("META-INF")
+    archiveFileName = "${project.archives_base_name}-${project.mod_version}-shadow.jar"
+}
+
+remapJar {
+    // wait until the shadowJar is done
+    dependsOn(shadowJar)
+    mustRunAfter(shadowJar)
+    // Set the input jar for the task. Here use the shadow Jar that include the .class of the transitive dependency
+    inputFile = file(shadowJar.archivePath)
+}
 
 repositories {
     // Add repositories to retrieve artifacts from in here.
@@ -43,11 +58,11 @@ dependencies {
     include "io.wispforest:owo-sentinel:${project.owo_version}"
 
     // Old Discord integration (still needed for oauth2) TODO: Migrate to JDA
-    api include("com.discord4j:discord4j-core:3.3.0-M2")
-    api include("com.discord4j:discord4j-oauth2:3.3.0-M2")
+    api shadow("com.discord4j:discord4j-core:3.3.0-M2")
+    api shadow("com.discord4j:discord4j-oauth2:3.3.0-M2")
 
     // New Discord integration
-    api include("net.dv8tion:JDA:${rootProject.jda_version}") {
+    api shadow("net.dv8tion:JDA:${rootProject.jda_version}") {
         exclude module: "opus-java"
     }
 
