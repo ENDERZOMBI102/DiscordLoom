@@ -52,8 +52,6 @@ public class DiscordEventListener extends ListenerAdapter {
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
-
             ArrayList<String> names = new ArrayList<>();
 
             for (UUID uuid : uuids) {
