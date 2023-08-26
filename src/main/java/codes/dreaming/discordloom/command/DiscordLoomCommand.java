@@ -118,7 +118,13 @@ public class DiscordLoomCommand {
         ArrayList<String> names = new ArrayList<>();
 
         for (UUID uuid : matches) {
-            net.luckperms.api.model.user.User luckUser = LuckPermsProvider.get().getUserManager().loadUser(uuid).getNow(null);
+            net.luckperms.api.model.user.User luckUser;
+
+            try {
+                luckUser = LuckPermsProvider.get().getUserManager().loadUser(uuid).join();
+            } catch (Exception e) {
+                luckUser = null;
+            }
 
             if (luckUser == null) {
                 names.add("§cUnknown user (§4" + uuid + "§c)");
