@@ -1,11 +1,11 @@
 package codes.dreaming.discordloom.command;
 
-import codes.dreaming.discordloom.PermissionHelper;
 import codes.dreaming.discordloom.discord.ServerDiscordManager;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.*;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.NodeType;
@@ -27,7 +27,7 @@ public class DiscordLoomCommand {
     public static LiteralArgumentBuilder<ServerCommandSource> command() {
         return literal("discordloom")
                 .then(literal("whois")
-                        .requires(src -> PermissionHelper.hasPermission(src, "discordloom.whois"))
+                        .requires(src -> Permissions.check(src, "discordloom.whois", 2))
                         .then(literal("player")
                                 .then(argument("player", EntityArgumentType.player())
                                         .executes(DiscordLoomCommand::whoisPlayer))
@@ -37,7 +37,7 @@ public class DiscordLoomCommand {
                                         .executes(DiscordLoomCommand::whoisDiscord)))
                 )
                 .then(literal("role")
-                        .requires(src -> PermissionHelper.hasPermission(src, "discordloom.role"))
+                        .requires(src -> Permissions.check(src, "discordloom.role", 4))
                         .then(literal("add")
                                 .then(argument("player", EntityArgumentType.player())
                                         .then(argument("guildId", LongArgumentType.longArg())
