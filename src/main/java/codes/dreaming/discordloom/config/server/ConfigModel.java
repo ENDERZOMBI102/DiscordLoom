@@ -19,4 +19,6 @@ public class ConfigModel {
     public Boolean allowMultipleMinecraftAccountsPerDiscordAccount = false;
 
     public List<String> mandatoryVCChannels = List.of();
+
+    public Boolean banDiscordAccount = true;
 }

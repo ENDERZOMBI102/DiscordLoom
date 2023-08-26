@@ -3,6 +3,9 @@ package codes.dreaming.discordloom;
 import codes.dreaming.discordloom.command.DiscordLoomCommand;
 import codes.dreaming.discordloom.config.server.ServerConfig;
 import codes.dreaming.discordloom.discord.ServerDiscordManager;
+import codes.dreaming.discordloom.impl.BanImpl;
+import com.mojang.authlib.GameProfile;
+import eu.pb4.banhammer.impl.BanHammerImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -42,8 +45,9 @@ public class DiscordLoomServer implements DedicatedServerModInitializer {
                 throw new CrashException(new CrashReport("Bot is not in all required guilds", new Exception()));
             }
 
-            if (FabricLoader.getInstance().isModLoaded("banhammer")) {
-                LOGGER.info("BanHammer detected, adding DiscordLoom to ban reasons");
+            if (SERVER_CONFIG.banDiscordAccount() && FabricLoader.getInstance().isModLoaded("banhammer")) {
+                LOGGER.info("BanHammer detected");
+                BanHammerImpl.PUNISHMENT_EVENT.register(((punishmentData, b, b1) -> BanImpl.ban(List.of(new GameProfile(punishmentData.playerUUID, punishmentData.playerName)), punishmentData.reason, punishmentData.adminDisplayName.getString())));
             }
         }
     }

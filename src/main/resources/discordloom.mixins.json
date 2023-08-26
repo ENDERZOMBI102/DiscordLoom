@@ -12,7 +12,6 @@
     "server.LoginHelloC2SPacketMixin",
     "server.ServerLoginNetworkHandlerMixin",
     "server.ban.vanilla.BanCommandMixin",
-    "server.ban.vanilla.BanIpCommandMixin",
     "server.ban.vanilla.PardonCommandMixin"
   ],
   "injectors": {

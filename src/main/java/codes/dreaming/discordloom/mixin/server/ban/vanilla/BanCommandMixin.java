@@ -1,5 +1,6 @@
 package codes.dreaming.discordloom.mixin.server.ban.vanilla;
 
+import codes.dreaming.discordloom.impl.BanImpl;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.command.BanCommand;
@@ -16,5 +17,6 @@ import java.util.Collection;
 public class BanCommandMixin {
     @Inject(method = "ban", at = @At(value = "RETURN", target = "Lnet/minecraft/server/BannedPlayerList;add(Lnet/minecraft/server/ServerConfigEntry;)V"))
     private static void banMixin(ServerCommandSource source, Collection<GameProfile> targets, @Nullable Text reason, CallbackInfoReturnable<Integer> cir) {
+        BanImpl.ban(targets, reason == null ? null : reason.getString(), source.getName());
     }
 }
