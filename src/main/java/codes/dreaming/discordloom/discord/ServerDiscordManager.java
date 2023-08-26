@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,6 +34,10 @@ public class ServerDiscordManager {
         jdaApi = JDABuilder.createDefault(SERVER_CONFIG.discordBotToken(), GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS).build();
 
         jdaApi.addEventListener(new DiscordEventListener());
+
+        jdaApi.updateCommands().addCommands(
+                Commands.context(Command.Type.USER, "Get user minecraft info")
+        ).queue();
 
         restClient = RestClient.create(SERVER_CONFIG.discordBotToken());
     }
