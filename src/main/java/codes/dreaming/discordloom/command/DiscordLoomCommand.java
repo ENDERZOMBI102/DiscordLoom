@@ -37,7 +37,8 @@ public class DiscordLoomCommand {
                                         .executes(DiscordLoomCommand::whoisDiscord)))
                 )
                 .then(literal("role")
-                        .requires(src -> Permissions.check(src, "discordloom.role", 4))
+                        //Fix to allow automation of role management with origins
+                        .requires(src -> src.hasPermissionLevel(4) || Permissions.check(src, "discordloom.role", 4))
                         .then(literal("add")
                                 .then(argument("player", EntityArgumentType.player())
                                         .then(argument("guildId", LongArgumentType.longArg())
