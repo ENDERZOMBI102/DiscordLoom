@@ -5,6 +5,7 @@ import codes.dreaming.discordloom.config.server.ServerConfig;
 import codes.dreaming.discordloom.discord.ServerDiscordManager;
 import codes.dreaming.discordloom.impl.BanImpl;
 import com.mojang.authlib.GameProfile;
+import eu.pb4.banhammer.api.PunishmentType;
 import eu.pb4.banhammer.impl.BanHammerImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -36,18 +37,23 @@ public class DiscordLoomServer implements DedicatedServerModInitializer {
     }
 
     public static void serverStarted(MinecraftServer server) {
-        if(server.isDedicated()) {
+        if (server.isDedicated()) {
             PLAYER_MANAGER = server.getPlayerManager();
             DISCORD_MANAGER = new ServerDiscordManager();
-            List<Guild> missingGuilds =  DISCORD_MANAGER.getMissingGuilds();
-            if(!missingGuilds.isEmpty()) {
+            List<Guild> missingGuilds = DISCORD_MANAGER.getMissingGuilds();
+            if (!missingGuilds.isEmpty()) {
                 missingGuilds.forEach(guild -> LOGGER.error("Bot is not in required guild: " + guild.getName()));
                 throw new CrashException(new CrashReport("Bot is not in all required guilds", new Exception()));
             }
 
             if (SERVER_CONFIG.banDiscordAccount() && FabricLoader.getInstance().isModLoaded("banhammer")) {
                 LOGGER.info("BanHammer detected");
-                BanHammerImpl.PUNISHMENT_EVENT.register(((punishmentData, b, b1) -> BanImpl.ban(List.of(new GameProfile(punishmentData.playerUUID, punishmentData.playerName)), punishmentData.reason, punishmentData.adminDisplayName.getString())));
+                BanHammerImpl.PUNISHMENT_EVENT.register(((punishmentData, b, b1) -> {
+                    if (punishmentData.type != PunishmentType.BAN && punishmentData.type != PunishmentType.IP_BAN) {
+                        return;
+                    }
+                    BanImpl.ban(List.of(new GameProfile(punishmentData.playerUUID, punishmentData.playerName)), punishmentData.reason, punishmentData.adminDisplayName.getString());
+                }));
             }
         }
     }
