@@ -65,15 +65,27 @@ public abstract class DisconnectedScreenMixin extends Screen {
             this.reasonHeight = this.reasonFormatted.count() * this.textRenderer.fontHeight;
 
             Text linkButtonMessage = Text.of("Click here to link your account");
-            discordLoom$linkButton = new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight, this.height - 30), 200, 20, linkButtonMessage, button -> this.discordLoom$startLinkingProcess());
+            discordLoom$linkButton = new ButtonWidget(
+				this.width / 2 - 100,
+				Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight, this.height - 30),
+				200, 20,
+				linkButtonMessage,
+				button -> this.discordLoom$startLinkingProcess()
+			);
             this.addDrawableChild(discordLoom$linkButton);
             Text cancelButtonMessage = Text.of("Cancel");
-            this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight + 30, this.height - 30), 200, 20, cancelButtonMessage, button -> {
-                if (this.discordloom$server != null) {
-                    this.discordloom$server.stop(0);
-                }
-                this.client.setScreen(this.parent);
-            }));
+            this.addDrawableChild(new ButtonWidget(
+				this.width / 2 - 100,
+				Math.min(this.height / 2 + this.reasonHeight / 2 + this.textRenderer.fontHeight + 30, this.height - 30),
+				200, 20,
+				cancelButtonMessage,
+				button -> {
+					if (this.discordloom$server != null) {
+						this.discordloom$server.stop(0);
+					}
+					this.client.setScreen(this.parent);
+				}
+			));
 
             ci.cancel();
         }
@@ -88,7 +100,14 @@ public abstract class DisconnectedScreenMixin extends Screen {
 
 
         try {
-            this.discordloom$server = HttpServer.create(new InetSocketAddress(ClientLinkManager.getPortFromOauthURL()), 0);
+			var port = ClientLinkManager.getPortFromOauthURL();
+			if ( port == null ) {
+				this.discordLoom$linkButton.setMessage(Text.of("Error during linking process, manual linking is required contact the server owner"));
+				LOGGER.error("Error creating server for linking process: Failed to retrieve port from oauth url!");
+				return;
+			}
+
+            this.discordloom$server = HttpServer.create(new InetSocketAddress(port), 0);
             this.discordloom$server.createContext("/callback", httpExchange -> {
                 String response = "You can now close this tab and go back to the game";
                 httpExchange.sendResponseHeaders(200, response.length());
@@ -107,7 +126,7 @@ public abstract class DisconnectedScreenMixin extends Screen {
             this.discordLoom$linkButton.setMessage(Text.of("If your browser didn't open, paste the link in your clipboard in your browser"));
         } catch (Exception e) {
             this.discordLoom$linkButton.setMessage(Text.of("Error during linking process, manual linking is required contact the server owner"));
-            LOGGER.error("Error creating server for linking process: " + e.getMessage());
+            LOGGER.error("Error creating server for linking process: {}", e.getMessage());
         }
 
     }

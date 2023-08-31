@@ -12,6 +12,7 @@ public class DiscordLoom implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");
+    public static final Identifier QUERY_PACKET_ID = new Identifier(MOD_ID, "query");
 
     @Override
     public void onInitialize() {

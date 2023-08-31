@@ -29,7 +29,8 @@ public class ClientLinkManager {
      * @return The port number extracted from the redirect_uri parameter, or null if the URL is null or does not contain a redirect_uri parameter.
      */
     public static Integer getPortFromOauthURL(){
-        if(url == null) return null;
+        if(url == null)
+			return null;
         String[] urlSplit = url.split("&");
         for(String s : urlSplit) {
             if(s.contains("redirect_uri")) {
@@ -50,7 +51,7 @@ public class ClientLinkManager {
 
     /**
      * Sets the server address used for communication.
-     *
+     * <p>
      * If the provided serverAddress parameter is different from the current server address, the code is reset to null.
      *
      * @param serverAddress The server address to be set.
