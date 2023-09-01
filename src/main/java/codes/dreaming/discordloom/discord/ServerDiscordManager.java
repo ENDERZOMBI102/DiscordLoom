@@ -13,7 +13,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.NodeEqualityPredicate;
 import net.luckperms.api.node.matcher.NodeMatcher;
 import net.luckperms.api.node.types.MetaNode;
-import reactor.util.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
