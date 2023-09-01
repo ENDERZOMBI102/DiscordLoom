@@ -1,10 +1,10 @@
 package codes.dreaming.discordloom;
 
+import codes.dreaming.discordloom.screen.DiscordLoginScreen;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
@@ -21,21 +21,34 @@ public class DiscordLoomClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 		ClientLoginNetworking.registerGlobalReceiver(QUERY_PACKET_ID, DiscordLoomClient::onQueryRequest);
-        ClientPlayNetworking.registerGlobalReceiver(LINK_PACKET, (client, handler, buf, responSender) -> {
-            LOGGER.info("Received link packet from server");
-            ClientLinkManager.setUrl(buf.readString());
-        });
+		ClientLoginNetworking.registerGlobalReceiver(RELAY_PACKET_ID, DiscordLoomClient::onRelayRequest);
     }
 
 	private static CompletableFuture<@Nullable PacketByteBuf> onQueryRequest(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder) {
-		var send = PacketByteBufs.create();
+		var oauthUrl = buf.readString();
 
-		var code = ClientLinkManager.getCode();
-		send.writeOptional(Optional.ofNullable(code), PacketByteBuf::writeString);
+		var flag = new Object();
+		client.executeSync( () -> client.setScreen( new DiscordLoginScreen( client.currentScreen, oauthUrl, flag ) ) );
 
-		LOGGER.info("Sent code: {}", code);
-		ClientLinkManager.setCode(null);
+		return CompletableFuture.supplyAsync( () -> {
+			var send = PacketByteBufs.create();
 
-		return CompletableFuture.completedFuture(send);
+			try {
+				flag.wait();
+			} catch ( InterruptedException e ) {
+				throw new RuntimeException( e );
+			}
+			var code = ClientLinkManager.getCode();
+			send.writeOptional(Optional.ofNullable(code), PacketByteBuf::writeString);
+
+			LOGGER.info("Sent code: {}", code);
+			ClientLinkManager.setCode(null);
+
+			return send;
+		});
+	}
+
+	private static CompletableFuture<@Nullable PacketByteBuf> onRelayRequest(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder) {
+		return CompletableFuture.completedFuture( PacketByteBufs.empty() );
 	}
 }
