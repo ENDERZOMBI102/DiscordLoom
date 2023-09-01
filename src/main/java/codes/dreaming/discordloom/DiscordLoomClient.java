@@ -30,8 +30,8 @@ public class DiscordLoomClient implements ClientModInitializer {
 
 		var name = switch ( Util.getOperatingSystem() ) {
 			case WINDOWS -> "discord_game_sdk.dll";
-			case OSX -> "discord_game_sdk.dylib";
 			case LINUX -> "discord_game_sdk.so";
+			case OSX -> "discord_game_sdk.dylib";
 			default -> throw new IllegalStateException( "What os are you on??" );
 		};
 		var target = FabricLoader.getInstance().getGameDir().resolve( ".cache/" );
