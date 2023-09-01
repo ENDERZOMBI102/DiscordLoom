@@ -35,7 +35,10 @@ public class DiscordLoomClient implements ClientModInitializer {
 			default -> throw new IllegalStateException( "What os are you on??" );
 		};
 		var target = FabricLoader.getInstance().getGameDir().resolve( ".cache/" );
-		target.toFile().mkdir();
+
+		if ( !( target.toFile().exists() || target.toFile().mkdir() ) )
+			throw new IllegalStateException( "Failed to create `.cache` folder in game directory!" );
+
 		target = target.resolve( name );
 		if (! target.toFile().exists() ) {
 			try ( var stream = DiscordLoomClient.class.getResourceAsStream( "/library/" + name ) ) {
@@ -60,7 +63,7 @@ public class DiscordLoomClient implements ClientModInitializer {
 			var code = future.join();
 			send.writeOptional(Optional.ofNullable(code), PacketByteBuf::writeLong);
 
-			LOGGER.info("Sent code: {}", code);
+			LOGGER.info("Sent user id: {}", code);
 
 			return send;
 		});

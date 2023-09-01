@@ -141,7 +141,7 @@ public class DiscordLoomServer implements DedicatedServerModInitializer {
 
 	/**
 	 * Called when the user is logging in for the first time, with the oauth token.<br/>
-	 * In this we can't assume that the GameProfile has an uuid, luck-perms user or that they joined again.
+	 * In this we can't assume that the GameProfile has an uuid or a luck-perms user, and that they joined again.
 	 */
 	private static void onQueryResponse( MinecraftServer server, ServerLoginNetworkHandler handler, boolean understood, PacketByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender responseSender ) {
 		if ( !understood )
@@ -292,14 +292,16 @@ public class DiscordLoomServer implements DedicatedServerModInitializer {
 				.mandatoryVCChannels()
 				.stream()
 				.anyMatch( mandatoryVCChannel -> {
-					var voiceChannel = DISCORD_MANAGER.getJdaApi().getVoiceChannelById( mandatoryVCChannel );
+					var voiceChannel = DISCORD_MANAGER.getJdaApi()
+						.getVoiceChannelById( mandatoryVCChannel );
+
 					if ( voiceChannel == null )
 						return false;
 
 					return voiceChannel.getMembers()
 						.stream()
 						.anyMatch( member -> member.getId().equals( discordUser.getId() ) );
-				} );
+				});
 
 			if ( !hasMandatoryVCChannel ) {
 				LOGGER.info( "User {} ({}) joined without being in a mandatory voice channel!", profile.getName(), profile.getId() );

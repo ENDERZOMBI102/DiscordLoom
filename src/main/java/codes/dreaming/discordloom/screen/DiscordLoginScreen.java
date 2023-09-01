@@ -92,9 +92,10 @@ public class DiscordLoginScreen extends Screen {
         this.linkButton.active = false;
         this.linkButton.setMessage(Text.of("Linking..."));
 
+		// TODO: Handle failure and no discord client
 		try ( var linker = new DiscordLinkHandler( this.clientId ) ) {
-			this.client.submit( () -> this.client.setScreen( this.parent ) );
 			this.future.complete( linker.start() );
+			this.client.submit( () -> this.client.setScreen( this.parent ) );
 		} catch (Exception e) {
             this.linkButton.setMessage(Text.of("text.discordloom.connect.failed" ));
             LOGGER.error("Error creating server for linking process: {}", e.getMessage());

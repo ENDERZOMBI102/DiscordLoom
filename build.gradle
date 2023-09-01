@@ -21,11 +21,6 @@ remapJar {
 }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://maven.wispforest.io' }
     maven { url 'https://jitpack.io' }
@@ -58,13 +53,7 @@ dependencies {
     annotationProcessor( modImplementation("io.wispforest:owo-lib:${project.owo_version}") )
     include( "io.wispforest:owo-sentinel:${project.owo_version}" )
 
-    //annotationProcessor implementation(include("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"))
-
     include( implementation( "com.github.JnCrMx:discord-game-sdk4j:0.5.5" ) )
-
-    // Old Discord integration (still needed for oauth2) TODO: Migrate to JDA
-    api shadow("com.discord4j:discord4j-core:3.3.0-M2")
-    api shadow("com.discord4j:discord4j-oauth2:3.3.0-M2")
 
     // New Discord integration
     shadow( api( "net.dv8tion:JDA:${rootProject.jda_version}") {

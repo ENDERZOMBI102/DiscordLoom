@@ -11,10 +11,9 @@ public class DiscordLoom implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final Identifier LINK_PACKET = new Identifier(MOD_ID, "link");
-	/**
-	 * server -> client = oauth url
-	 * server <- client = oauth token
+   /**
+	 * server -> client = client id
+	 * server <- client = user id
 	 */
     public static final Identifier QUERY_PACKET_ID = new Identifier(MOD_ID, "query");
     public static final Identifier RELAY_PACKET_ID = new Identifier(MOD_ID, "relay");

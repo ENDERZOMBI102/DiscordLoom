@@ -3,6 +3,9 @@ package codes.dreaming.discordloom.discord;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.DiscordEventAdapter;
+import de.jcm.discordgamesdk.LogLevel;
+
+import static com.mojang.text2speech.Narrator.LOGGER;
 
 public class DiscordLinkHandler extends DiscordEventAdapter implements AutoCloseable {
 	private final Core core;
@@ -13,8 +16,17 @@ public class DiscordLinkHandler extends DiscordEventAdapter implements AutoClose
 		var params = new CreateParams();
 		params.setClientID( clientId );
 		params.setFlags(CreateParams.getDefaultFlags());
+		params.registerEventHandler( this );
 
 		this.core = new Core( params );
+		this.core.setLogHook( LogLevel.DEBUG, ( level, message ) -> {
+			switch ( level ) {
+				case DEBUG -> LOGGER.debug( message );
+				case INFO  -> LOGGER.info( message );
+				case WARN  -> LOGGER.warn( message );
+				case ERROR -> LOGGER.error( message );
+			}
+		});
 	}
 
 	/**
@@ -24,7 +36,9 @@ public class DiscordLinkHandler extends DiscordEventAdapter implements AutoClose
 	public long start() {
 		try {
 			this.running = true;
-			new Thread( this::run ).join();
+			var thread = new Thread( null, this::run, "game-sdk-thread" );
+			thread.start();
+			thread.join();
 			return this.userId;
 		} catch ( InterruptedException e ) {
 			throw new RuntimeException( e );
