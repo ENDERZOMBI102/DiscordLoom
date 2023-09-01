@@ -1,9 +1,6 @@
 package codes.dreaming.discordloom.discord;
 
-import de.jcm.discordgamesdk.Core;
-import de.jcm.discordgamesdk.CreateParams;
-import de.jcm.discordgamesdk.DiscordEventAdapter;
-import de.jcm.discordgamesdk.LogLevel;
+import de.jcm.discordgamesdk.*;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
 
@@ -15,7 +12,7 @@ public class DiscordLinkHandler extends DiscordEventAdapter implements AutoClose
 	public DiscordLinkHandler( long clientId ) {
 		var params = new CreateParams();
 		params.setClientID( clientId );
-		params.setFlags(CreateParams.getDefaultFlags());
+		params.setFlags( CreateParams.Flags.NO_REQUIRE_DISCORD );
 		params.registerEventHandler( this );
 
 		this.core = new Core( params );

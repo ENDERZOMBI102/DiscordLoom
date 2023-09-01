@@ -9,8 +9,9 @@
     "text.discordloom.disconnect.channel.text": "You are not in the required discord channel to join this server.",
     "text.discordloom.disconnect.channel.voice": "You are not in a mandatory voice channel to join this server.",
 
-    "text.discordloom.connect.message": "For playing on this server, you need to link your account. Please click on the button bellow to link your account",
-    "text.discordloom.connect.link_button": "Click here to link your account",
-    "text.discordloom.connect.failed": "Error during linking process, manual linking is required contact the server owner",
-    "text.discordloom.connect.browser_clipboard": "If your browser didn't open, paste the link in your clipboard in your browser"
+    "text.discordloom.connect.message": "For playing on this server, you need to link your discord account. Please click on the button bellow to link your discord account",
+    "text.discordloom.connect.linkButton": "Click here to link your account",
+    "text.discordloom.connect.linkButton.failed": "Link failed",
+    "text.discordloom.connect.noDiscord": "Error during linking process, make sure the discord client is running and retry",
+    "text.discordloom.connect.failed": "Error during linking process, manual linking is required, contact the server owner"
 }

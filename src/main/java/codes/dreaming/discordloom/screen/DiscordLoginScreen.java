@@ -2,6 +2,7 @@ package codes.dreaming.discordloom.screen;
 
 import codes.dreaming.discordloom.discord.DiscordLinkHandler;
 import codes.dreaming.discordloom.mixin.client.ConnectScreenAccessor;
+import de.jcm.discordgamesdk.GameSDKException;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -18,7 +19,9 @@ public class DiscordLoginScreen extends Screen {
 	private final long clientId;
 	private int reasonHeight;
 	private ButtonWidget linkButton;
-	private MultilineText reasonFormatted;
+	private MultilineText message;
+	private Text errorMessage;
+	private boolean failed;
 
 
 	public DiscordLoginScreen( Screen parent, CompletableFuture<Long> future, long clientId ) {
@@ -26,6 +29,8 @@ public class DiscordLoginScreen extends Screen {
 		this.parent = parent;
 		this.future = future;
 		this.clientId = clientId;
+		this.failed = false;
+		this.errorMessage = Text.empty();
 	}
 
 	@Override
@@ -41,26 +46,27 @@ public class DiscordLoginScreen extends Screen {
     public void init() {
         assert this.client != null;
 
-		this.reasonFormatted = MultilineText.create(
+		this.message = MultilineText.create(
 			this.textRenderer,
 			Text.translatable( "text.discordloom.connect.message" ),
 			this.width - 50
 		);
-		this.reasonHeight = reasonFormatted.count() * this.textRenderer.fontHeight;
+		this.reasonHeight = message.count() * this.textRenderer.fontHeight;
 
 		this.linkButton = new ButtonWidget(
 			this.width / 2 - 100,
 			Math.min(this.height / 2 + reasonHeight / 2 + this.textRenderer.fontHeight, this.height - 30),
 			200, 20,
-			Text.translatable( "text.discordloom.connect.link_button" ),
+			Text.translatable( "text.discordloom.connect.linkButton" + (this.failed ? ".failed" : "") ),
 			button -> this.startLinkingProcess()
 		);
+		this.linkButton.active = !this.failed;
 		this.addDrawableChild(this.linkButton);
 		var cancelButton = new ButtonWidget(
 			this.width / 2 - 100,
 			Math.min( this.height / 2 + reasonHeight / 2 + this.textRenderer.fontHeight + 30, this.height - 30 ),
 			200, 20,
-			Text.of( "Cancel" ),
+			Text.translatable( "gui.cancel" ),
 			this::onCancel
 		);
 		this.addDrawableChild( cancelButton );
@@ -75,14 +81,24 @@ public class DiscordLoginScreen extends Screen {
 			this.textRenderer,
 			this.title,
 			this.width / 2,
-			yPosition - 9 * 2,
+			yPosition - 18 * 2,
 			0xAAAAAA
 		);
-		this.reasonFormatted.drawCenterWithShadow(
+		this.message.drawCenterWithShadow(
 			matrices,
 			this.width / 2,
-			yPosition
+			yPosition - 9 * 2
 		);
+		// text rendering is expensive...
+		if ( this.failed )
+			drawCenteredTextWithShadow(
+				matrices,
+				this.textRenderer,
+				this.errorMessage.asOrderedText(),
+				this.width / 2,
+				yPosition + 10,
+				0xAAAAAA
+			);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -92,13 +108,15 @@ public class DiscordLoginScreen extends Screen {
         this.linkButton.active = false;
         this.linkButton.setMessage(Text.of("Linking..."));
 
-		// TODO: Handle failure and no discord client
 		try ( var linker = new DiscordLinkHandler( this.clientId ) ) {
 			this.future.complete( linker.start() );
 			this.client.submit( () -> this.client.setScreen( this.parent ) );
-		} catch (Exception e) {
-            this.linkButton.setMessage(Text.of("text.discordloom.connect.failed" ));
-            LOGGER.error("Error creating server for linking process: {}", e.getMessage());
+		} catch ( Exception e ) {
+			var text = "text.discordloom.connect." + ( e instanceof GameSDKException ? "noDiscord" : "failed" );
+			this.errorMessage = Text.translatable( text );
+			this.linkButton.setMessage(Text.translatable("text.discordloom.connect.linkButton.failed"));
+			LOGGER.error("Error during discord linkup: {}", e.getMessage());
+			this.failed = true;
         }
     }
 
