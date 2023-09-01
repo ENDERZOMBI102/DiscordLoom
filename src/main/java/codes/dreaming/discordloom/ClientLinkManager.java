@@ -7,16 +7,16 @@ import org.jetbrains.annotations.NotNull;
 
 @Environment(EnvType.CLIENT)
 public class ClientLinkManager {
-    private static ServerAddress serverAddress = null;
+    private static ServerAddress lastServerAddress = null;
 
-    private static String code = null;
+    private static String oauthToken = null;
 
-    public static String getCode() {
-        return code;
+    public static String getOAuthToken() {
+        return oauthToken;
     }
 
-    public static void setCode(String code) {
-        ClientLinkManager.code = code;
+    public static void setOauthToken( String oauthToken ) {
+        ClientLinkManager.oauthToken = oauthToken;
     }
 
     /**
@@ -35,8 +35,8 @@ public class ClientLinkManager {
         return null;
     }
 
-    public static ServerAddress getServerAddress() {
-        return serverAddress;
+    public static ServerAddress getLastServerAddress() {
+        return lastServerAddress;
     }
 
     /**
@@ -46,9 +46,9 @@ public class ClientLinkManager {
      *
      * @param serverAddress The server address to be set.
      */
-    public static void setServerAddress(ServerAddress serverAddress) {
-        if ( ClientLinkManager.serverAddress != null && !ClientLinkManager.serverAddress.equals(serverAddress) )
-            ClientLinkManager.setCode(null);
-        ClientLinkManager.serverAddress = serverAddress;
+    public static void setLastServerAddress( ServerAddress serverAddress ) {
+        if ( lastServerAddress != null && !lastServerAddress.equals(serverAddress) )
+            setOauthToken(null);
+        lastServerAddress = serverAddress;
     }
 }

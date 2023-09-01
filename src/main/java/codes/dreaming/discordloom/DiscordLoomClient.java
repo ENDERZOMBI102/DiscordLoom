@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -27,22 +28,24 @@ public class DiscordLoomClient implements ClientModInitializer {
 	private static CompletableFuture<@Nullable PacketByteBuf> onQueryRequest(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder) {
 		var oauthUrl = buf.readString();
 
-		var flag = new Object();
-		client.executeSync( () -> client.setScreen( new DiscordLoginScreen( client.currentScreen, oauthUrl, flag ) ) );
+		var hasOAuthToken = ClientLinkManager.getOAuthToken() != null;
+
+		// only actually connect if we already have the oauth token
+		if (! hasOAuthToken ) {
+			client.executeSync( () -> client.setScreen( new DiscordLoginScreen( client.currentScreen, oauthUrl ) ) );
+			handler.getConnection().disconnect( Text.empty() );
+		}
 
 		return CompletableFuture.supplyAsync( () -> {
 			var send = PacketByteBufs.create();
 
-			try {
-				flag.wait();
-			} catch ( InterruptedException e ) {
-				throw new RuntimeException( e );
-			}
-			var code = ClientLinkManager.getCode();
-			send.writeOptional(Optional.ofNullable(code), PacketByteBuf::writeString);
+			if ( hasOAuthToken ) {
+				var code = ClientLinkManager.getOAuthToken();
+				send.writeOptional( Optional.ofNullable( code ), PacketByteBuf::writeString );
 
-			LOGGER.info("Sent code: {}", code);
-			ClientLinkManager.setCode(null);
+				LOGGER.info("Sent code: {}", code);
+				ClientLinkManager.setOauthToken(null);
+			}
 
 			return send;
 		});

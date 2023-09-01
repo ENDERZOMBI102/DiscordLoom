@@ -16,6 +16,6 @@ public class ConnectScreenMixin {
 		at = @At("HEAD")
 	)
     private void getAddress(final MinecraftClient client, final ServerAddress address, CallbackInfo ci) {
-        ClientLinkManager.setServerAddress(address);
+        ClientLinkManager.setLastServerAddress(address);
     }
 }

@@ -4,6 +4,7 @@ import codes.dreaming.discordloom.ClientLinkManager;
 import codes.dreaming.discordloom.mixin.client.ConnectScreenAccessor;
 import com.sun.net.httpserver.HttpServer;
 import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,18 +18,16 @@ import static codes.dreaming.discordloom.DiscordLoom.LOGGER;
 public class DiscordLoginScreen extends Screen {
 	private final Screen parent;
 	private final String oauthUrl;
-	private final Object flag;
 	private int reasonHeight;
 	private HttpServer server;
 	private ButtonWidget linkButton;
 	private MultilineText reasonFormatted;
 
 
-	public DiscordLoginScreen( Screen parent, String oauthUrl, Object flag ) {
+	public DiscordLoginScreen( Screen parent, String oauthUrl ) {
         super( Text.translatable( "screen.discordloom.login.title" ) );
 		this.parent = parent;
 		this.oauthUrl = oauthUrl;
-		this.flag = flag;
 	}
 
 	@Override
@@ -97,7 +96,6 @@ public class DiscordLoginScreen extends Screen {
         this.linkButton.active = false;
         this.linkButton.setMessage(Text.of("Linking..."));
 
-
         try {
 			var port = ClientLinkManager.getPortFromOauthURL( this.oauthUrl );
 			if ( port == null ) {
@@ -113,14 +111,17 @@ public class DiscordLoginScreen extends Screen {
                 exchange.getResponseBody().write(response.getBytes());
                 exchange.close();
                 this.server.stop(0);
-                ClientLinkManager.setCode(exchange.getRequestURI().getQuery().split("=")[1]);
+                ClientLinkManager.setOauthToken(exchange.getRequestURI().getQuery().split("=")[1]);
 
-				this.client.submit( () -> {
-					this.client.setScreen( this.parent );
-					synchronized ( this.flag ) {
-						this.flag.notify();
-					}
-				});
+				// done with everything, reconnect to the server
+				this.client.submit( () ->
+					ConnectScreen.connect(
+						( (ConnectScreenAccessor) this.parent ).getParent(),
+						this.client,
+						ClientLinkManager.getLastServerAddress(),
+						this.client.getCurrentServerEntry()
+					)
+				);
             });
             this.server.setExecutor(null);
             this.server.start();
