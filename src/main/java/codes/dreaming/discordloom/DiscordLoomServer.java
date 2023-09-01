@@ -133,7 +133,7 @@ public class DiscordLoomServer implements DedicatedServerModInitializer {
 			LOGGER.trace( "A user without a discordloom.id node tried to join!" );
 
 			var buf = PacketByteBufs.create();
-			buf.writeString( DISCORD_MANAGER.generateDiscordOauthUri() );
+			buf.writeLong( SERVER_CONFIG.discordClientId() );
 
 			sender.sendPacket( QUERY_PACKET_ID, buf );
 		}
@@ -177,16 +177,17 @@ public class DiscordLoomServer implements DedicatedServerModInitializer {
 		}
 
 		// read the oauth token from the packet
-		var token = buf.readOptional( PacketByteBuf::readString ).orElse( null );
+		var userId = buf.readOptional( PacketByteBuf::readLong )
+			.map( Object::toString )
+			.orElse( null );
 
 		// not actually possible...
-		if ( token == null ) {
+		if ( userId == null ) {
 			handler.disconnect( NO_MOD_TEXT );
 			return;
 		}
 
-		LOGGER.trace( "Received code: {}", token );
-		var userId = DISCORD_MANAGER.doDiscordLink( token );
+		LOGGER.trace( "Received userId: {}", userId );
 
 		if ( !SERVER_CONFIG.allowMultipleMinecraftAccountsPerDiscordAccount() ) {
 			var uuids = ServerDiscordManager.getPlayersFromDiscordId( userId );

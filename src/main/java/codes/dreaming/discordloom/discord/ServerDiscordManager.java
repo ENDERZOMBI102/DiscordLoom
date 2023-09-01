@@ -1,8 +1,5 @@
 package codes.dreaming.discordloom.discord;
 
-import discord4j.discordjson.json.AuthorizationCodeGrantRequest;
-import discord4j.oauth2.DiscordOAuth2Client;
-import discord4j.rest.RestClient;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -26,7 +23,6 @@ import static codes.dreaming.discordloom.DiscordLoomServer.SERVER_CONFIG;
 
 @Environment(EnvType.SERVER)
 public class ServerDiscordManager {
-    private final RestClient restClient;
     private final JDA jdaApi;
 
 
@@ -40,8 +36,6 @@ public class ServerDiscordManager {
         jdaApi.updateCommands()
 			.addCommands(Commands.context(Command.Type.USER, "Get user minecraft info"))
 			.queue();
-
-        restClient = RestClient.create(SERVER_CONFIG.discordBotToken());
     }
 
     public JDA getJdaApi() {
@@ -68,25 +62,6 @@ public class ServerDiscordManager {
         return jdaApi.getGuildById(guildId);
     }
 
-    public String generateDiscordOauthUri() {
-        return "https://discord.com/api/oauth2/authorize?client_id=" + SERVER_CONFIG.discordClientId() + "&redirect_uri=" + getDiscordRedirectUri() + "&response_type=code&scope=identify";
-    }
-
-    public String doDiscordLink(String code) {
-        DiscordOAuth2Client oAuth2Client = DiscordOAuth2Client.createFromCode(
-			restClient,
-			AuthorizationCodeGrantRequest.builder()
-				.code(code)
-				.clientId(SERVER_CONFIG.discordClientId())
-				.clientSecret(SERVER_CONFIG.discordClientSecret())
-				.redirectUri(getDiscordRedirectUri())
-				.build()
-		);
-        return Objects.requireNonNull(oAuth2Client.getCurrentUser().block())
-			.id()
-			.toString();
-    }
-
     public static Set<UUID> getPlayersFromDiscordId(String discordId) {
         Set<UUID> matches;
 
@@ -109,9 +84,5 @@ public class ServerDiscordManager {
 			.key(LuckPermsMetadataKey)
 			.value(discordId)
 			.build();
-    }
-
-    private static String getDiscordRedirectUri() {
-        return "http://localhost:" + SERVER_CONFIG.discordRedirectUriPort() + "/callback";
     }
 }

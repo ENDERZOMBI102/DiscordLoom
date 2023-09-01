@@ -28,6 +28,7 @@ repositories {
     // for more information about repositories.
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://maven.wispforest.io' }
+    maven { url 'https://jitpack.io' }
 
     exclusiveContent {
         forRepository {
@@ -44,29 +45,31 @@ repositories {
 
 dependencies {
     // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    minecraft( "com.mojang:minecraft:${project.minecraft_version}" )
+    mappings( "net.fabricmc:yarn:${project.yarn_mappings}:v2" )
+    modImplementation( "net.fabricmc:fabric-loader:${project.fabric_loader_version}" )
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    modImplementation( "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}" )
 
     include(modImplementation('me.lucko:fabric-permissions-api:0.2-SNAPSHOT'))
     modApi("maven.modrinth:luckperms:v${rootProject.luckperms_version}-fabric")
 
-    annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
-    include "io.wispforest:owo-sentinel:${project.owo_version}"
+    annotationProcessor( modImplementation("io.wispforest:owo-lib:${project.owo_version}") )
+    include( "io.wispforest:owo-sentinel:${project.owo_version}" )
 
     //annotationProcessor implementation(include("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"))
+
+    include( implementation( "com.github.JnCrMx:discord-game-sdk4j:0.5.5" ) )
 
     // Old Discord integration (still needed for oauth2) TODO: Migrate to JDA
     api shadow("com.discord4j:discord4j-core:3.3.0-M2")
     api shadow("com.discord4j:discord4j-oauth2:3.3.0-M2")
 
     // New Discord integration
-    api shadow("net.dv8tion:JDA:${rootProject.jda_version}") {
-        exclude module: "opus-java"
-    }
+    shadow( api( "net.dv8tion:JDA:${rootProject.jda_version}") {
+        exclude( module: "opus-java" )
+    })
 
     // Banhammer integration
     modCompileOnly("maven.modrinth:banhammer:${rootProject.banhammer_version}")

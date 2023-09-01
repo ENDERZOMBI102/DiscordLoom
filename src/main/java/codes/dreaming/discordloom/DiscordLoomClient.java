@@ -1,16 +1,21 @@
 package codes.dreaming.discordloom;
 
 import codes.dreaming.discordloom.screen.DiscordLoginScreen;
+import de.jcm.discordgamesdk.Core;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -22,27 +27,40 @@ public class DiscordLoomClient implements ClientModInitializer {
     public void onInitializeClient() {
 		ClientLoginNetworking.registerGlobalReceiver(QUERY_PACKET_ID, DiscordLoomClient::onQueryRequest);
 		ClientLoginNetworking.registerGlobalReceiver(RELAY_PACKET_ID, DiscordLoomClient::onRelayRequest);
+
+		var name = switch ( Util.getOperatingSystem() ) {
+			case WINDOWS -> "discord_game_sdk.dll";
+			case OSX -> "discord_game_sdk.dylib";
+			case LINUX -> "discord_game_sdk.so";
+			default -> throw new IllegalStateException( "What os are you on??" );
+		};
+		var target = FabricLoader.getInstance().getGameDir().resolve( ".cache/" );
+		target.toFile().mkdir();
+		target = target.resolve( name );
+		if (! target.toFile().exists() ) {
+			try ( var stream = DiscordLoomClient.class.getResourceAsStream( "/library/" + name ) ) {
+				assert stream != null : "Why are we not reading a file we have..?";
+				Files.copy( stream, target );
+			} catch ( IOException e ) {
+				throw new RuntimeException( e );
+			}
+		}
+		Core.init( target.toFile() );
     }
 
 	private static CompletableFuture<@Nullable PacketByteBuf> onQueryRequest(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder) {
-		var oauthUrl = buf.readString();
+		var clientId = buf.readLong();
 
-		var flag = new Object();
-		client.executeSync( () -> client.setScreen( new DiscordLoginScreen( client.currentScreen, oauthUrl, flag ) ) );
+		var future = new CompletableFuture<Long>();
+		client.executeSync( () -> client.setScreen( new DiscordLoginScreen( client.currentScreen, future, clientId ) ) );
 
 		return CompletableFuture.supplyAsync( () -> {
 			var send = PacketByteBufs.create();
 
-			try {
-				flag.wait();
-			} catch ( InterruptedException e ) {
-				throw new RuntimeException( e );
-			}
-			var code = ClientLinkManager.getCode();
-			send.writeOptional(Optional.ofNullable(code), PacketByteBuf::writeString);
+			var code = future.join();
+			send.writeOptional(Optional.ofNullable(code), PacketByteBuf::writeLong);
 
 			LOGGER.info("Sent code: {}", code);
-			ClientLinkManager.setCode(null);
 
 			return send;
 		});

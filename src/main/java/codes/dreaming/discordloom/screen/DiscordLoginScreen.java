@@ -1,34 +1,31 @@
 package codes.dreaming.discordloom.screen;
 
-import codes.dreaming.discordloom.ClientLinkManager;
+import codes.dreaming.discordloom.discord.DiscordLinkHandler;
 import codes.dreaming.discordloom.mixin.client.ConnectScreenAccessor;
-import com.sun.net.httpserver.HttpServer;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
-import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 
 import static codes.dreaming.discordloom.DiscordLoom.LOGGER;
 
 public class DiscordLoginScreen extends Screen {
+	private final CompletableFuture<Long> future;
 	private final Screen parent;
-	private final String oauthUrl;
-	private final Object flag;
+	private final long clientId;
 	private int reasonHeight;
-	private HttpServer server;
 	private ButtonWidget linkButton;
 	private MultilineText reasonFormatted;
 
 
-	public DiscordLoginScreen( Screen parent, String oauthUrl, Object flag ) {
+	public DiscordLoginScreen( Screen parent, CompletableFuture<Long> future, long clientId ) {
         super( Text.translatable( "screen.discordloom.login.title" ) );
 		this.parent = parent;
-		this.oauthUrl = oauthUrl;
-		this.flag = flag;
+		this.future = future;
+		this.clientId = clientId;
 	}
 
 	@Override
@@ -43,8 +40,6 @@ public class DiscordLoginScreen extends Screen {
 	@Override
     public void init() {
         assert this.client != null;
-
-		this.client.keyboard.setClipboard( this.oauthUrl );
 
 		this.reasonFormatted = MultilineText.create(
 			this.textRenderer,
@@ -97,48 +92,17 @@ public class DiscordLoginScreen extends Screen {
         this.linkButton.active = false;
         this.linkButton.setMessage(Text.of("Linking..."));
 
-
-        try {
-			var port = ClientLinkManager.getPortFromOauthURL( this.oauthUrl );
-			if ( port == null ) {
-				this.linkButton.setMessage(Text.translatable("text.discordloom.connect.failed"));
-				LOGGER.error("Error creating server for linking process: Failed to retrieve port from oauth url!");
-				return;
-			}
-
-            this.server = HttpServer.create(new InetSocketAddress(port), 0);
-            this.server.createContext("/callback", exchange -> {
-                var response = "You can now close this tab and go back to the game";
-                exchange.sendResponseHeaders(200, response.length());
-                exchange.getResponseBody().write(response.getBytes());
-                exchange.close();
-                this.server.stop(0);
-                ClientLinkManager.setCode(exchange.getRequestURI().getQuery().split("=")[1]);
-
-				this.client.submit( () -> {
-					this.client.setScreen( this.parent );
-					synchronized ( this.flag ) {
-						this.flag.notify();
-					}
-				});
-            });
-            this.server.setExecutor(null);
-            this.server.start();
-            Util.getOperatingSystem().open( this.oauthUrl );
-            this.client.keyboard.setClipboard( this.oauthUrl );
-
-            this.linkButton.setMessage(Text.translatable( "text.discordloom.connect.browser_clipboard" ));
-        } catch (Exception e) {
+		try ( var linker = new DiscordLinkHandler( this.clientId ) ) {
+			this.client.submit( () -> this.client.setScreen( this.parent ) );
+			this.future.complete( linker.start() );
+		} catch (Exception e) {
             this.linkButton.setMessage(Text.of("text.discordloom.connect.failed" ));
             LOGGER.error("Error creating server for linking process: {}", e.getMessage());
         }
-
     }
 
 	private void onCancel( ButtonWidget btn ) {
 		assert this.client != null;
-		if ( this.server != null )
-			this.server.stop( 0 );
 
 		// first set back to connection screen
 		this.client.setScreen( this.parent );
